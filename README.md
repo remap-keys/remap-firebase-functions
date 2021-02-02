@@ -1,6 +1,6 @@
-# remap-discord-notifier
+# remap-firebase-functions
 
-This project provides a notification mechanism for Remap review process.
+This project has some Firebase Functions to provide backend logics for Remap. 
 
 ## Prepare
 
