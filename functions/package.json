@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "firebase-functions-test": "^0.2.0",
+    "prettier": "^2.2.1",
     "typescript": "^3.8.0"
   },
   "private": true
