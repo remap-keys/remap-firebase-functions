@@ -36,11 +36,13 @@ const notifyToDiscord = async (
   definitionId: string,
   data: any
 ): Promise<void> => {
-  const docUrl = `${
-    functions.config().firestore.definition_document_url
-  }${definitionId}`;
+  const docUrl = `https://admin.remap-keys.app/review/${definitionId}`;
+  console.log(docUrl);
+  const message = `We have received a new review request: ${data.name}(${data.product_name}) ${docUrl}`;
+  console.log(message);
+  console.log(DISCORD_WEBHOOK_URL);
   await axios.default.post<void>(DISCORD_WEBHOOK_URL, {
-    content: `We have received a new review request: ${data.name}(${data.product_name}) ${docUrl}`,
+    content: message,
   });
 };
 
