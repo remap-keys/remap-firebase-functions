@@ -1,0 +1,33 @@
+name: Deploy for Production
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          ref: main
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: cd functions; npm install
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_PRODUCTION }}
+          PROJECT_ID: remap-4f4d9
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          NOTIFICATION_URL: ${{ secrets.NOTIFICATION_URL }}
