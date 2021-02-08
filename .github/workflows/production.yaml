@@ -1,7 +1,8 @@
 name: Deploy for Production
 on:
-  pull_request:
-    types: [opened, synchronize]
+  push:
+    branches:
+      - main
 jobs:
   deploy:
     name: Build and Deploy
