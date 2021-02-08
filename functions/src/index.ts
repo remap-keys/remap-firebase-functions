@@ -6,6 +6,7 @@ import AbstractCommand from './abstract-command';
 import { FetchKeyboardDefinitionListByStatusCommand } from './admin/fetch-keyboard-definition-list-by-status-command';
 import { FetchKeyboardDefinitionByIdCommand } from './admin/fetch-keyboard-definition-by-id-command';
 import { UpdateKeyboardDefinitionStatusCommand } from './admin/update-keyboard-definition-status-command';
+import { notifyWithGAS } from './admin/notification';
 
 const FUNCTIONS_REGION = 'asia-northeast1';
 
@@ -41,6 +42,17 @@ const notifyToDiscord = async (
   await axios.default.post<void>(DISCORD_WEBHOOK_URL, {
     content: message,
   });
+  const userRecord = await admin.auth().getUser(data.author_uid);
+  const providerData = userRecord.providerData[0];
+  const payload = {
+    messageType: 'received',
+    email: providerData.email,
+    displayName: providerData.displayName,
+    keyboard: data.name,
+    status: data.status,
+    definitionId,
+  };
+  await notifyWithGAS(payload);
 };
 
 funcMap['definitionUpdateHook'] = functions

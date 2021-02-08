@@ -7,10 +7,8 @@ import {
   ValidateIncludes,
   ValidateRequired,
 } from './decorators';
-import * as axios from 'axios';
-import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import * as jwt from 'jsonwebtoken';
+import { notifyWithGAS } from './notification';
 
 export class UpdateKeyboardDefinitionStatusCommand extends AbstractCommand {
   @NeedAuthentication()
@@ -43,23 +41,14 @@ export class UpdateKeyboardDefinitionStatusCommand extends AbstractCommand {
       .getUser(documentSnapshot.data()!.author_uid);
     const providerData = userRecord.providerData[0];
     const payload = {
+      messageType: 'change',
       email: providerData.email,
       displayName: providerData.displayName,
       keyboard: documentSnapshot.data()!.name,
       status: data.status,
       definitionId: documentSnapshot.id,
     };
-    const jwtSecret = functions.config().jwt.secret;
-    const jwtOptions: jwt.SignOptions = {
-      algorithm: 'HS256',
-      expiresIn: '3m',
-    };
-    const token = jwt.sign(payload, jwtSecret, jwtOptions);
-    console.log(token);
-    await axios.default.post<void>(functions.config().notification.url, {
-      token,
-      payload,
-    });
+    await notifyWithGAS(payload);
     return {
       success: true,
     };
