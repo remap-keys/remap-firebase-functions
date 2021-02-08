@@ -18,6 +18,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: cd functions; npm install
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
