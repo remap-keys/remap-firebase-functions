@@ -44,6 +44,7 @@ export class UpdateKeyboardDefinitionStatusCommand extends AbstractCommand {
     const providerData = userRecord.providerData[0];
     const payload = {
       email: providerData.email,
+      displayName: providerData.displayName,
       keyboard: documentSnapshot.data()!.name,
       status: data.status,
       definitionId: documentSnapshot.id,
