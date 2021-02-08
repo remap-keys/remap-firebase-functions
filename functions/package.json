@@ -5,7 +5,7 @@
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "prepare-deploy": "npm run build && firebase functions:config:set `cat .env`",
+    "prepare-deploy": "npm run build && firebase functions:config:set discord.webhook=$DISCORD_WEBHOOK notification.url=$NOTIFICATION_URL jwt.secret=$JWT_SECRET",
     "deploy": "npm run prepare-deploy && firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
@@ -16,9 +16,11 @@
   "dependencies": {
     "axios": "^0.21.1",
     "firebase-admin": "^8.10.0",
-    "firebase-functions": "^3.6.1"
+    "firebase-functions": "^3.6.1",
+    "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^8.5.0",
     "firebase-functions-test": "^0.2.0",
     "prettier": "^2.2.1",
     "typescript": "^3.8.0"
