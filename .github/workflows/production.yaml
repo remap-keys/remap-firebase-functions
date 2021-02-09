@@ -27,7 +27,7 @@ jobs:
           args: deploy
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_PRODUCTION }}
-          PROJECT_ID: remap-4f4d9
+          PROJECT_ID: remap-b2d08
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           NOTIFICATION_URL: ${{ secrets.NOTIFICATION_URL }}
