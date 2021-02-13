@@ -1,6 +1,10 @@
 import AbstractCommand from '../abstract-command';
 import * as functions from 'firebase-functions';
-import { ERROR_KEYBOARD_DEFINITION_NOT_FOUND, IKeyboardDefinitionDetail, IResult } from '../types';
+import {
+  ERROR_KEYBOARD_DEFINITION_NOT_FOUND,
+  IKeyboardDefinitionDetail,
+  IResult,
+} from '../utils/types';
 import {
   NeedAdministratorPermission,
   NeedAuthentication,
@@ -30,14 +34,16 @@ export class FetchKeyboardDefinitionByIdCommand extends AbstractCommand<IFetchKe
       return {
         success: false,
         errorCode: ERROR_KEYBOARD_DEFINITION_NOT_FOUND,
-        errorMessage: `Keyboard Definition not found: ${data.id}`
+        errorMessage: `Keyboard Definition not found: ${data.id}`,
       };
     }
-    const userRecord = await admin.auth().getUser(documentSnapshot.data()!.author_uid);
+    const userRecord = await admin
+      .auth()
+      .getUser(documentSnapshot.data()!.author_uid);
     const providerData = userRecord.providerData[0];
     return {
       success: true,
-      keyboardDefinitionDetail:  {
+      keyboardDefinitionDetail: {
         id: documentSnapshot.id,
         authorUid: documentSnapshot.data()!.uid,
         createdAt: documentSnapshot.data()!.created_at.toDate().getTime(),
@@ -52,7 +58,7 @@ export class FetchKeyboardDefinitionByIdCommand extends AbstractCommand<IFetchKe
         githubUid: providerData.uid,
         githubDisplayName: providerData.displayName,
         githubEmail: providerData.email,
-      }
+      },
     };
   }
 }
