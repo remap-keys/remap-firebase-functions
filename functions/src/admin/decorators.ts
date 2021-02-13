@@ -1,34 +1,43 @@
 import * as functions from 'firebase-functions';
-import AbstractCommand from "../abstract-command";
-import {ERROR_NOT_ADMINISTRATOR, ERROR_VALIDATION} from "../types";
+import AbstractCommand from '../abstract-command';
+import { ERROR_NOT_ADMINISTRATOR, ERROR_VALIDATION } from '../utils/types';
 
 export function NeedAuthentication() {
-
-  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
     const originalMethod = descriptor.value;
-    descriptor.value = function(...args: any[]) {
+    descriptor.value = function (...args: any[]) {
       const context = args[1] as functions.https.CallableContext;
       if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', 'Unauthenticated.');
+        throw new functions.https.HttpsError(
+          'unauthenticated',
+          'Unauthenticated.'
+        );
       }
       return originalMethod.apply(this, args);
     };
     return descriptor;
-  }
-
+  };
 }
 
 export function NeedAdministratorPermission() {
-
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
     const originalMethod = descriptor.value;
-    descriptor.value = function(...args: any[]) {
+    descriptor.value = function (...args: any[]) {
       const self = this;
       return new Promise((resolve, reject) => {
         const context = args[1] as functions.https.CallableContext;
         const uid = context.auth!.uid;
-        (self as AbstractCommand).checkUserIsAdministrator.apply(self, [uid])
-          .then(result => {
+        (self as AbstractCommand).checkUserIsAdministrator
+          .apply(self, [uid])
+          .then((result) => {
             if (result) {
               resolve(originalMethod.apply(self, args));
             } else {
@@ -39,21 +48,23 @@ export function NeedAdministratorPermission() {
               });
             }
           })
-          .catch(reason => {
+          .catch((reason) => {
             throw new Error(reason);
           });
-      })
-    }
+      });
+    };
     return descriptor;
-  }
-
+  };
 }
 
 export function ValidateRequired(targets: string[]) {
-
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
     const originalMethod = descriptor.value;
-    descriptor.value = function(...args: any[]) {
+    descriptor.value = function (...args: any[]) {
       const data = args[0];
       for (const name of targets) {
         const value = data[name];
@@ -61,22 +72,24 @@ export function ValidateRequired(targets: string[]) {
           return {
             success: false,
             errorCode: ERROR_VALIDATION,
-            errorMessage: `The "${name}" is required.`
+            errorMessage: `The "${name}" is required.`,
           };
         }
       }
       return originalMethod.apply(this, args);
     };
     return descriptor;
-  }
-
+  };
 }
 
-export function ValidateIncludes(rules: {[p: string]: any[]}) {
-
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+export function ValidateIncludes(rules: { [p: string]: any[] }) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
     const originalMethod = descriptor.value;
-    descriptor.value = function(...args: any[]) {
+    descriptor.value = function (...args: any[]) {
       const data = args[0];
       for (const name of Object.keys(rules)) {
         const value = data[name];
@@ -84,13 +97,12 @@ export function ValidateIncludes(rules: {[p: string]: any[]}) {
           return {
             success: false,
             errorCode: ERROR_VALIDATION,
-            errorMessage: `The "${name}" must be included in ${rules[name]}.`
+            errorMessage: `The "${name}" must be included in ${rules[name]}.`,
           };
         }
       }
       return originalMethod.apply(this, args);
     };
     return descriptor;
-  }
-
+  };
 }

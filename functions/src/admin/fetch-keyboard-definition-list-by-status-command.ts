@@ -1,6 +1,6 @@
 import AbstractCommand from '../abstract-command';
 import * as functions from 'firebase-functions';
-import { IKeyboardDefinition, IResult } from '../types';
+import { IKeyboardDefinition, IResult } from '../utils/types';
 import {
   NeedAdministratorPermission,
   NeedAuthentication,
@@ -32,7 +32,7 @@ export class FetchKeyboardDefinitionListByStatusCommand extends AbstractCommand<
       .get();
     return {
       success: true,
-      keyboardDefinitionList: querySnapshot.docs.map(doc => {
+      keyboardDefinitionList: querySnapshot.docs.map((doc) => {
         return {
           id: doc.id,
           authorUid: doc.data().uid,
@@ -46,7 +46,7 @@ export class FetchKeyboardDefinitionListByStatusCommand extends AbstractCommand<
           updatedAt: doc.data().updated_at.toDate().getTime(),
           vendorId: doc.data().vendor_id,
         };
-      })
+      }),
     };
   }
 }

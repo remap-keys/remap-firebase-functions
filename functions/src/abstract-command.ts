@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import {IResult} from "./types";
+import { IResult } from './utils/types';
 
 abstract class AbstractCommand<R extends IResult = IResult> {
   protected db: admin.firestore.Firestore;
@@ -9,7 +9,10 @@ abstract class AbstractCommand<R extends IResult = IResult> {
     this.db = db;
   }
 
-  abstract async execute(data: any, context: functions.https.CallableContext): Promise<R>;
+  abstract async execute(
+    data: any,
+    context: functions.https.CallableContext
+  ): Promise<R>;
 
   async checkUserIsAdministrator(uid: string): Promise<boolean> {
     const userRecord = await admin.auth().getUser(uid);
@@ -27,7 +30,6 @@ abstract class AbstractCommand<R extends IResult = IResult> {
     const administrators = administratorsSnapshot.data()?.users || [];
     return administrators.includes(email);
   }
-
 }
 
 export default AbstractCommand;

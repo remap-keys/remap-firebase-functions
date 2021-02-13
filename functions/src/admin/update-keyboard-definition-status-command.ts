@@ -1,6 +1,6 @@
 import AbstractCommand from '../abstract-command';
 import { CallableContext } from 'firebase-functions/lib/providers/https';
-import { ERROR_KEYBOARD_DEFINITION_NOT_FOUND, IResult } from '../types';
+import { ERROR_KEYBOARD_DEFINITION_NOT_FOUND, IResult } from '../utils/types';
 import {
   NeedAdministratorPermission,
   NeedAuthentication,
@@ -8,7 +8,7 @@ import {
   ValidateRequired,
 } from './decorators';
 import * as admin from 'firebase-admin';
-import { notifyWithGAS } from './notification';
+import { notifyWithGAS } from '../utils/notification';
 
 export class UpdateKeyboardDefinitionStatusCommand extends AbstractCommand {
   @NeedAuthentication()
