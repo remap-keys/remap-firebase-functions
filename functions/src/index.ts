@@ -9,6 +9,7 @@ import {
   definitionCreateHook,
   definitionUpdateHook,
 } from './firestore/event-handler';
+import { review } from './admin/review';
 
 const FUNCTIONS_REGION = 'asia-northeast1';
 
@@ -35,5 +36,11 @@ const funcMap = Object.keys(commandMap).reduce((map, functionName) => {
 
 funcMap['definitionCreateHook'] = definitionCreateHook;
 funcMap['definitionUpdateHook'] = definitionUpdateHook;
+funcMap['review'] = functions
+  .region(FUNCTIONS_REGION)
+  .pubsub.topic('review')
+  .onPublish(async (message) => {
+    await review(message, db);
+  });
 
 export = funcMap;
