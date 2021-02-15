@@ -1,32 +1,20 @@
-import * as axios from 'axios';
-import * as admin from 'firebase-admin';
-import { notifyWithGAS } from '../utils/notification';
+import { notifyToDiscord } from '../utils/notification';
 import * as functions from 'firebase-functions';
-
-const DISCORD_WEBHOOK_URL = functions.config().discord.webhook;
+import { PubSub } from '@google-cloud/pubsub';
 
 const FUNCTIONS_REGION = 'asia-northeast1';
 
-const notifyToDiscord = async (
-  definitionId: string,
-  data: any
+const pubsub = new PubSub();
+
+const sendMessageToReviewQueue = async (
+  definitionId: string
 ): Promise<void> => {
-  const docUrl = `https://admin.remap-keys.app/review/${definitionId}`;
-  const message = `We have received a new review request: ${data.name}(${data.product_name}) ${docUrl}`;
-  await axios.default.post<void>(DISCORD_WEBHOOK_URL, {
-    content: message,
-  });
-  const userRecord = await admin.auth().getUser(data.author_uid);
-  const providerData = userRecord.providerData[0];
-  const payload = {
-    messageType: 'received',
-    email: providerData.email,
-    displayName: providerData.displayName,
-    keyboard: data.name,
-    status: data.status,
+  const message = {
     definitionId,
   };
-  await notifyWithGAS(payload);
+  const dataBuffer = Buffer.from(JSON.stringify(message));
+  const messageId = await pubsub.topic('review').publish(dataBuffer);
+  console.log(`The message was sent to the topic(review): ${messageId}`);
 };
 
 export const definitionUpdateHook = functions
@@ -39,7 +27,13 @@ export const definitionUpdateHook = functions
       ['draft', 'rejected'].includes(beforeData.status) &&
       afterData.status === 'in_review'
     ) {
-      await notifyToDiscord(context.params.definitionId, afterData);
+      await notifyToDiscord(context.params.definitionId, {
+        name: afterData.name,
+        author_uid: afterData.author_uid,
+        product_name: afterData.product_name,
+        status: afterData.status,
+      });
+      await sendMessageToReviewQueue(context.params.definitionId);
     }
   });
 
@@ -49,6 +43,12 @@ export const definitionCreateHook = functions
   .onCreate(async (snapshot, context) => {
     const data = snapshot.data()!;
     if (data.status === 'in_review') {
-      await notifyToDiscord(context.params.definitionId, data);
+      await notifyToDiscord(context.params.definitionId, {
+        name: data.name,
+        author_uid: data.author_uid,
+        product_name: data.product_name,
+        status: data.status,
+      });
+      await sendMessageToReviewQueue(context.params.definitionId);
     }
   });
