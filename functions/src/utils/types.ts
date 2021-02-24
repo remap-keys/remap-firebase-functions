@@ -26,11 +26,12 @@ export interface IKeyboardDefinition {
   readonly status: IKeyboardDefinitionStatus;
   readonly json: string;
   readonly rejectReason: string | undefined;
+  readonly githubUrl: string;
   readonly createdAt: number;
   readonly updatedAt: number;
 }
 
-export interface IKeyboardDefinitionDetail extends IKeyboardDefinition{
+export interface IKeyboardDefinitionDetail extends IKeyboardDefinition {
   readonly githubUid: string;
   readonly githubDisplayName: string;
   readonly githubEmail: string;

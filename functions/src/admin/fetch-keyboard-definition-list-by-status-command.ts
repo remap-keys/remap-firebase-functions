@@ -45,6 +45,7 @@ export class FetchKeyboardDefinitionListByStatusCommand extends AbstractCommand<
           status: doc.data().status,
           updatedAt: doc.data().updated_at.toDate().getTime(),
           vendorId: doc.data().vendor_id,
+          githubUrl: doc.data().github_url,
         };
       }),
     };
