@@ -55,6 +55,7 @@ export class FetchKeyboardDefinitionByIdCommand extends AbstractCommand<IFetchKe
         status: documentSnapshot.data()!.status,
         updatedAt: documentSnapshot.data()!.updated_at.toDate().getTime(),
         vendorId: documentSnapshot.data()!.vendor_id,
+        githubUrl: documentSnapshot.data()!.github_url,
         githubUid: providerData.uid,
         githubDisplayName: providerData.displayName,
         githubEmail: providerData.email,
