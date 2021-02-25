@@ -56,6 +56,17 @@ export class FetchKeyboardDefinitionByIdCommand extends AbstractCommand<IFetchKe
         updatedAt: documentSnapshot.data()!.updated_at.toDate().getTime(),
         vendorId: documentSnapshot.data()!.vendor_id,
         githubUrl: documentSnapshot.data()!.github_url,
+        firmwareCodePlace: documentSnapshot.data()!.firmware_code_place,
+        qmkRepositoryFirstPullRequestUrl: documentSnapshot.data()!
+          .qmk_repository_first_pull_request_url,
+        forkedRepositoryUrl: documentSnapshot.data()!.forked_repository_url,
+        forkedRepositoryEvidence: documentSnapshot.data()!
+          .forked_repository_evidence,
+        otherPlaceHowToGet: documentSnapshot.data()!.other_place_how_to_get,
+        otherPlaceSourceCodeEvidence: documentSnapshot.data()!
+          .other_place_source_code_evidence,
+        otherPlacePublisherEvidence: documentSnapshot.data()!
+          .other_place_publisher_evidence,
         githubUid: providerData.uid,
         githubDisplayName: providerData.displayName,
         githubEmail: providerData.email,

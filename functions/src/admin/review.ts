@@ -1,6 +1,9 @@
 import * as functions from 'firebase-functions';
 import { firestore } from 'firebase-admin';
-import { notifyToDiscord } from '../utils/notification';
+import {
+  notifyMessageToDiscord,
+  notifyReviewStatusChangeMessageToDiscordAndGAS,
+} from '../utils/notification';
 
 export const review = async (
   message: functions.pubsub.Message,
@@ -34,7 +37,7 @@ export const review = async (
     return;
   }
   if (definitionQuerySnapshot.size === 1) {
-    await approve(definitionDocumentSnapshot);
+    await requestIsUnique(definitionDocumentSnapshot);
     return;
   }
   const sameProductNameExists = definitionQuerySnapshot.docs.some((doc) => {
@@ -49,22 +52,15 @@ export const review = async (
     );
     return;
   }
-  await approve(definitionDocumentSnapshot);
+  await requestIsUnique(definitionDocumentSnapshot);
 };
 
-const approve = async (
+const requestIsUnique = async (
   definitionDocument: firestore.DocumentSnapshot
 ): Promise<void> => {
-  await definitionDocument.ref.update({
-    status: 'approved',
-    updated_at: new Date(),
-  });
-  await notifyToDiscord(definitionDocument.id, {
-    name: definitionDocument.data()!.name,
-    author_uid: definitionDocument.data()!.author_uid,
-    product_name: definitionDocument.data()!.product_name,
-    status: 'approved',
-  });
+  const data = definitionDocument.data()!;
+  const message = `The Vendor ID, Product ID and Product Name of the keyboard ${data.name}(${data.product_name}) is unique.`;
+  await notifyMessageToDiscord(definitionDocument.id, message);
 };
 
 const reject = async (
@@ -76,7 +72,7 @@ const reject = async (
     reject_reason: reason,
     updated_at: new Date(),
   });
-  await notifyToDiscord(definitionDocument.id, {
+  await notifyReviewStatusChangeMessageToDiscordAndGAS(definitionDocument.id, {
     name: definitionDocument.data()!.name,
     author_uid: definitionDocument.data()!.author_uid,
     product_name: definitionDocument.data()!.product_name,
