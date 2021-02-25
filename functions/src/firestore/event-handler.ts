@@ -1,4 +1,4 @@
-import { notifyToDiscord } from '../utils/notification';
+import { notifyReviewStatusChangeMessageToDiscordAndGAS } from '../utils/notification';
 import * as functions from 'firebase-functions';
 import { PubSub } from '@google-cloud/pubsub';
 
@@ -27,12 +27,15 @@ export const definitionUpdateHook = functions
       ['draft', 'rejected'].includes(beforeData.status) &&
       afterData.status === 'in_review'
     ) {
-      await notifyToDiscord(context.params.definitionId, {
-        name: afterData.name,
-        author_uid: afterData.author_uid,
-        product_name: afterData.product_name,
-        status: afterData.status,
-      });
+      await notifyReviewStatusChangeMessageToDiscordAndGAS(
+        context.params.definitionId,
+        {
+          name: afterData.name,
+          author_uid: afterData.author_uid,
+          product_name: afterData.product_name,
+          status: afterData.status,
+        }
+      );
       await sendMessageToReviewQueue(context.params.definitionId);
     }
   });
@@ -43,12 +46,15 @@ export const definitionCreateHook = functions
   .onCreate(async (snapshot, context) => {
     const data = snapshot.data()!;
     if (data.status === 'in_review') {
-      await notifyToDiscord(context.params.definitionId, {
-        name: data.name,
-        author_uid: data.author_uid,
-        product_name: data.product_name,
-        status: data.status,
-      });
+      await notifyReviewStatusChangeMessageToDiscordAndGAS(
+        context.params.definitionId,
+        {
+          name: data.name,
+          author_uid: data.author_uid,
+          product_name: data.product_name,
+          status: data.status,
+        }
+      );
       await sendMessageToReviewQueue(context.params.definitionId);
     }
   });

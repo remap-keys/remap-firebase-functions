@@ -12,15 +12,22 @@ export type INotificationData = {
   status: string;
 };
 
-export const notifyToDiscord = async (
+export const notifyMessageToDiscord = async (
+  definitionId: string,
+  message: string
+): Promise<void> => {
+  const docUrl = `https://admin.remap-keys.app/review/${definitionId}`;
+  await axios.default.post<void>(DISCORD_WEBHOOK_URL, {
+    content: `${message} ${docUrl}`,
+  });
+};
+
+export const notifyReviewStatusChangeMessageToDiscordAndGAS = async (
   definitionId: string,
   data: INotificationData
 ): Promise<void> => {
-  const docUrl = `https://admin.remap-keys.app/review/${definitionId}`;
-  const message = `The review status has been changed (${data.status}): ${data.name}(${data.product_name}) ${docUrl}`;
-  await axios.default.post<void>(DISCORD_WEBHOOK_URL, {
-    content: message,
-  });
+  const message = `The review status has been changed (${data.status}): ${data.name}(${data.product_name})`;
+  await notifyMessageToDiscord(definitionId, message);
   const userRecord = await admin.auth().getUser(data.author_uid);
   const providerData = userRecord.providerData[0];
   const payload = {

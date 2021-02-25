@@ -46,6 +46,16 @@ export class FetchKeyboardDefinitionListByStatusCommand extends AbstractCommand<
           updatedAt: doc.data().updated_at.toDate().getTime(),
           vendorId: doc.data().vendor_id,
           githubUrl: doc.data().github_url,
+          firmwareCodePlace: doc.data().firmware_code_place,
+          qmkRepositoryFirstPullRequestUrl: doc.data()
+            .qmk_repository_first_pull_request_url,
+          forkedRepositoryUrl: doc.data().forked_repository_url,
+          forkedRepositoryEvidence: doc.data().forked_repository_evidence,
+          otherPlaceHowToGet: doc.data().other_place_how_to_get,
+          otherPlaceSourceCodeEvidence: doc.data()
+            .other_place_source_code_evidence,
+          otherPlacePublisherEvidence: doc.data()
+            .other_place_publisher_evidence,
         };
       }),
     };
