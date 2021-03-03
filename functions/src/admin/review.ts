@@ -42,7 +42,9 @@ export const review = async (
   }
   const sameProductNameExists = definitionQuerySnapshot.docs.some((doc) => {
     return (
-      doc.id !== definitionId && doc.data()!.product_name.endsWith(productName)
+      doc.id !== definitionId &&
+      doc.data()!.product_name.endsWith(productName) &&
+      doc.data()!.status === 'approved'
     );
   });
   if (sameProductNameExists) {
