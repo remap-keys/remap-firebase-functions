@@ -1,9 +1,6 @@
 import * as functions from 'firebase-functions';
 import { firestore } from 'firebase-admin';
-import {
-  notifyMessageToDiscord,
-  notifyReviewStatusChangeMessageToDiscordAndGAS,
-} from '../utils/notification';
+import { notifyReviewStatusChangeMessageToDiscordAndGAS } from '../utils/notification';
 
 export const review = async (
   message: functions.pubsub.Message,
@@ -37,7 +34,7 @@ export const review = async (
     return;
   }
   if (definitionQuerySnapshot.size === 1) {
-    await requestIsUnique(definitionDocumentSnapshot);
+    requestIsUnique(definitionDocumentSnapshot);
     return;
   }
   const sameProductNameExists = definitionQuerySnapshot.docs.some((doc) => {
@@ -54,15 +51,15 @@ export const review = async (
     );
     return;
   }
-  await requestIsUnique(definitionDocumentSnapshot);
+  requestIsUnique(definitionDocumentSnapshot);
 };
 
-const requestIsUnique = async (
+const requestIsUnique = (
   definitionDocument: firestore.DocumentSnapshot
-): Promise<void> => {
+): void => {
   const data = definitionDocument.data()!;
-  const message = `The Vendor ID, Product ID and Product Name of the keyboard ${data.name}(${data.product_name}) is unique.`;
-  await notifyMessageToDiscord(definitionDocument.id, message);
+  const message = `The Vendor ID, Product ID and Product Name of the keyboard ${data.name}(${data.product_name}) (${definitionDocument.id}) is unique.`;
+  console.log(message);
 };
 
 const reject = async (
