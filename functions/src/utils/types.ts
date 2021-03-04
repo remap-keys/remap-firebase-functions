@@ -34,6 +34,7 @@ export interface IKeyboardDefinition {
   readonly json: string;
   readonly rejectReason: string | undefined;
   readonly githubUrl: string;
+  readonly githubDisplayName: string;
   readonly firmwareCodePlace: IFirmwareCodePlace;
   readonly qmkRepositoryFirstPullRequestUrl: string;
   readonly forkedRepositoryUrl: string;
