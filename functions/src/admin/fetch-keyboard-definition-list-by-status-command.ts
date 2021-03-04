@@ -46,6 +46,7 @@ export class FetchKeyboardDefinitionListByStatusCommand extends AbstractCommand<
           updatedAt: doc.data().updated_at.toDate().getTime(),
           vendorId: doc.data().vendor_id,
           githubUrl: doc.data().github_url,
+          githubDisplayName: doc.data().github_display_name,
           firmwareCodePlace: doc.data().firmware_code_place,
           qmkRepositoryFirstPullRequestUrl: doc.data()
             .qmk_repository_first_pull_request_url,
