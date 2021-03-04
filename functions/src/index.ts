@@ -10,6 +10,7 @@ import {
   definitionUpdateHook,
 } from './firestore/event-handler';
 import { review } from './admin/review';
+import { FetchKeyboardDefinitionStatsCommand } from './admin/fetch-keyboard-definition-stats-command';
 
 const FUNCTIONS_REGION = 'asia-northeast1';
 
@@ -23,6 +24,7 @@ const commandMap: { [p: string]: AbstractCommand } = {
   ),
   fetchKeyboardDefinitionDetailById: new FetchKeyboardDefinitionByIdCommand(db),
   updateKeyboardDefinitionStatus: new UpdateKeyboardDefinitionStatusCommand(db),
+  fetchKeyboardDefinitionStats: new FetchKeyboardDefinitionStatsCommand(db),
 };
 
 const funcMap = Object.keys(commandMap).reduce((map, functionName) => {
