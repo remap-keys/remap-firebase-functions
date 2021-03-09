@@ -1,6 +1,7 @@
 import { notifyReviewStatusChangeMessageToDiscordAndGAS } from '../utils/notification';
 import * as functions from 'firebase-functions';
 import { PubSub } from '@google-cloud/pubsub';
+import { firestore } from 'firebase-admin';
 
 const FUNCTIONS_REGION = 'asia-northeast1';
 
@@ -57,4 +58,29 @@ export const definitionCreateHook = functions
       );
       await sendMessageToReviewQueue(context.params.definitionId);
     }
+  });
+
+const client = new firestore.v1.FirestoreAdminClient();
+const bucket = 'gs://remap-firestore-backup-production';
+
+export const backupFirestore = functions
+  .region(FUNCTIONS_REGION)
+  .pubsub.schedule('every 24 hours')
+  .onRun((context) => {
+    const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
+    const databaseName = client.databasePath(projectId, '(default)');
+    return client
+      .exportDocuments({
+        name: databaseName,
+        outputUriPrefix: bucket,
+        collectionIds: [],
+      })
+      .then((responses: any) => {
+        const response = responses[0];
+        console.log(`Operation Name: ${response['name']}`);
+      })
+      .catch((err: any) => {
+        console.error(err);
+        throw new Error('Export operation failed');
+      });
   });
