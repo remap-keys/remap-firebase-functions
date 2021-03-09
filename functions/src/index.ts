@@ -6,6 +6,7 @@ import { FetchKeyboardDefinitionListByStatusCommand } from './admin/fetch-keyboa
 import { FetchKeyboardDefinitionByIdCommand } from './admin/fetch-keyboard-definition-by-id-command';
 import { UpdateKeyboardDefinitionStatusCommand } from './admin/update-keyboard-definition-status-command';
 import {
+  backupFirestore,
   definitionCreateHook,
   definitionUpdateHook,
 } from './firestore/event-handler';
@@ -44,5 +45,6 @@ funcMap['review'] = functions
   .onPublish(async (message) => {
     await review(message, db);
   });
+funcMap['backupFirestore'] = backupFirestore;
 
 export = funcMap;
