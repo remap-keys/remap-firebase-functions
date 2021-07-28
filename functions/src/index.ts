@@ -12,6 +12,7 @@ import {
 } from './firestore/event-handler';
 import { review } from './admin/review';
 import { FetchKeyboardDefinitionStatsCommand } from './admin/fetch-keyboard-definition-stats-command';
+import GenerateSitemapXmlCommand from './host/generate-sitemap-xml-command';
 
 const FUNCTIONS_REGION = 'asia-northeast1';
 
@@ -46,5 +47,10 @@ funcMap['review'] = functions
     await review(message, db);
   });
 funcMap['backupFirestore'] = backupFirestore;
+funcMap['sitemap'] = functions
+  .region(FUNCTIONS_REGION)
+  .https.onRequest(async (req, res) => {
+    await new GenerateSitemapXmlCommand(db).execute(req, res);
+  });
 
 export = funcMap;
