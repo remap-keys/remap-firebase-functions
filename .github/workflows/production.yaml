@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: cd functions; npm install
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@v1.4.0
         with:
           args: deploy
         env:
