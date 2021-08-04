@@ -13,6 +13,7 @@ import {
 import { review } from './admin/review';
 import { FetchKeyboardDefinitionStatsCommand } from './admin/fetch-keyboard-definition-stats-command';
 import GenerateSitemapXmlCommand from './host/generate-sitemap-xml-command';
+import GenerateCatalogPageCommand from './host/generate-catalog-page-command';
 
 const FUNCTIONS_REGION_ASIA = 'asia-northeast1';
 const FUNCTIONS_REGION_US = 'us-central1';
@@ -49,9 +50,16 @@ funcMap['review'] = functions
   });
 funcMap['backupFirestore'] = backupFirestore;
 funcMap['sitemap'] = functions
+  .runWith({ memory: '1GB' })
   .region(FUNCTIONS_REGION_US)
   .https.onRequest(async (req, res) => {
     await new GenerateSitemapXmlCommand(db).execute(req, res);
+  });
+funcMap['catalog'] = functions
+  .runWith({ memory: '1GB' })
+  .region(FUNCTIONS_REGION_US)
+  .https.onRequest(async (req, res) => {
+    await new GenerateCatalogPageCommand(db).execute(req, res);
   });
 
 export = funcMap;
