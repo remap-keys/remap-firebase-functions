@@ -20,11 +20,13 @@
     "firebase-functions": "^3.6.1",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
+    "qs": "^6.10.1",
     "sitemap": "^7.0.0"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^8.5.0",
     "@types/moment": "^2.13.0",
+    "@types/qs": "^6.9.7",
     "firebase-functions-test": "^0.2.0",
     "prettier": "^2.2.1",
     "typescript": "^3.8.0"
