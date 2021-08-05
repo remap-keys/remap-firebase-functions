@@ -31,7 +31,12 @@ export default class GenerateCatalogPageCommand {
     res: functions.Response
   ): Promise<void> {
     const path = req.path;
-    const query = qs.stringify(req.query, { addQueryPrefix: true });
+    const queryParams = req.query;
+    const referrer = req.get('Referrer');
+    if (referrer) {
+      queryParams.referrer = referrer;
+    }
+    const query = qs.stringify(queryParams, { addQueryPrefix: true });
     const regexp = /^\/catalog\/([a-zA-Z0-9]+)/;
     const m = path.match(regexp);
     let definitionDocumentId = undefined;
