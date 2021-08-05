@@ -9,7 +9,7 @@ abstract class AbstractCommand<R extends IResult = IResult> {
     this.db = db;
   }
 
-  abstract async execute(
+  abstract execute(
     data: any,
     context: functions.https.CallableContext
   ): Promise<R>;
