@@ -14,6 +14,11 @@ type IFetchDefinitionDocumentResult = {
   definition?: IKeyboardDefinition;
 };
 
+type IEscapeParam = {
+  value: string;
+  escape: boolean;
+};
+
 export default class GenerateCatalogPageCommand {
   protected db: admin.firestore.Firestore;
 
@@ -38,18 +43,33 @@ export default class GenerateCatalogPageCommand {
       if (result.exists) {
         res.send(
           this.replacePlaceholders(INDEX_HTML, {
-            TITLE: `${result.definition!.name} - Remap`,
-            DESCRIPTION: result.definition!.description,
-            IMAGE: result.definition!.image,
-            URL: `https://remap-keys.app/catalog/${result.definition!.id}`,
-            REDIRECT: this.createRedirectUrl(path, query),
+            TITLE: {
+              value: `${result.definition!.name} - Remap`,
+              escape: true,
+            },
+            DESCRIPTION: {
+              value: result.definition!.description,
+              escape: true,
+            },
+            IMAGE: { value: result.definition!.image, escape: true },
+            URL: {
+              value: `https://remap-keys.app/catalog/${result.definition!.id}`,
+              escape: true,
+            },
+            REDIRECT: {
+              value: this.createRedirectUrl(path, query),
+              escape: false,
+            },
           })
         );
       } else {
         res.send(
           this.replacePlaceholders(INDEX_HTML, {
             ...STANDARD_OGP,
-            REDIRECT: this.createRedirectUrl(path, query),
+            REDIRECT: {
+              value: this.createRedirectUrl(path, query),
+              escape: false,
+            },
           })
         );
       }
@@ -57,7 +77,10 @@ export default class GenerateCatalogPageCommand {
       res.send(
         this.replacePlaceholders(INDEX_HTML, {
           ...STANDARD_OGP,
-          REDIRECT: this.createRedirectUrl(path, query),
+          REDIRECT: {
+            value: this.createRedirectUrl(path, query),
+            escape: false,
+          },
         })
       );
     }
@@ -114,15 +137,17 @@ export default class GenerateCatalogPageCommand {
 
   replacePlaceholders(
     template: string,
-    params: { [p: string]: string }
+    params: { [p: string]: IEscapeParam }
   ): string {
     let result = template;
     for (const key of Object.keys(params)) {
-      let value = params[key];
-      if (!value) {
-        value = STANDARD_OGP[key];
+      let param = params[key];
+      if (!param) {
+        param = STANDARD_OGP[key];
       }
-      result = result.split(`%${key}%`).join(this.escapeHtml(value));
+      result = result
+        .split(`%${key}%`)
+        .join(param.escape ? this.escapeHtml(param.value) : param.value);
     }
     return result;
   }
@@ -139,12 +164,15 @@ export default class GenerateCatalogPageCommand {
   }
 }
 
-const STANDARD_OGP: { [p: string]: string } = {
-  TITLE: 'Remap',
-  DESCRIPTION:
-    'Remap allows you to configure key mappings and lighting of your keyboard with QMK firmware in Web Browser.',
-  IMAGE: 'https://remap-keys.app/ogp_image.png',
-  URL: 'https://remap-keys.app',
+const STANDARD_OGP: { [p: string]: IEscapeParam } = {
+  TITLE: { value: 'Remap', escape: true },
+  DESCRIPTION: {
+    value:
+      'Remap allows you to configure key mappings and lighting of your keyboard with QMK firmware in Web Browser.',
+    escape: true,
+  },
+  IMAGE: { value: 'https://remap-keys.app/ogp_image.png', escape: true },
+  URL: { value: 'https://remap-keys.app', escape: true },
 };
 
 const INDEX_HTML = `
