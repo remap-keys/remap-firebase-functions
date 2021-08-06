@@ -43,10 +43,6 @@ export default class GenerateSitemapXmlCommand {
         url: `/catalog/${keyboard.id}`,
         lastmod: moment(keyboard.data().updated_at.toDate()).toISOString(),
       });
-      urlEntries.push({
-        url: `/catalog/${keyboard.id}/keymap`,
-        lastmod: moment(keyboard.data().updated_at.toDate()).toISOString(),
-      });
     }
 
     const stream = new SitemapStream({ hostname: REMAP_TOP_URL });
