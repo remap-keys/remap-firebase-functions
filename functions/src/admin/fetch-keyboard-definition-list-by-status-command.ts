@@ -57,6 +57,7 @@ export class FetchKeyboardDefinitionListByStatusCommand extends AbstractCommand<
             .other_place_source_code_evidence,
           otherPlacePublisherEvidence: doc.data()
             .other_place_publisher_evidence,
+          contactInformation: doc.data().contact_information,
         };
       }),
     };
