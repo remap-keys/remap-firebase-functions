@@ -45,7 +45,9 @@ export class FetchKeyboardDefinitionByIdCommand extends AbstractCommand<IFetchKe
       success: true,
       keyboardDefinitionDetail: {
         id: documentSnapshot.id,
+        authorType: documentSnapshot.data()!.author_type,
         authorUid: documentSnapshot.data()!.uid,
+        organizationId: documentSnapshot.data()!.organization_id,
         createdAt: documentSnapshot.data()!.created_at.toDate().getTime(),
         json: documentSnapshot.data()!.json,
         name: documentSnapshot.data()!.name,
@@ -67,6 +69,7 @@ export class FetchKeyboardDefinitionByIdCommand extends AbstractCommand<IFetchKe
           .other_place_source_code_evidence,
         otherPlacePublisherEvidence: documentSnapshot.data()!
           .other_place_publisher_evidence,
+        organizationEvidence: documentSnapshot.data()!.organization_evidence,
         githubUid: providerData.uid,
         githubDisplayName: providerData.displayName,
         githubEmail: providerData.email,

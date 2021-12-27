@@ -63,3 +63,6 @@ node_modules/
 
 # dotenv environment variables file
 .env
+.envrc
+service-account-key-*.json
+.runtimeconfig.json

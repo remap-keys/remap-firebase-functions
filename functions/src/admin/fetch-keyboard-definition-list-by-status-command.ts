@@ -35,7 +35,9 @@ export class FetchKeyboardDefinitionListByStatusCommand extends AbstractCommand<
       keyboardDefinitionList: querySnapshot.docs.map((doc) => {
         return {
           id: doc.id,
+          authorType: doc.data().author_type,
           authorUid: doc.data().uid,
+          organizationId: doc.data().organization_id,
           createdAt: doc.data().created_at.toDate().getTime(),
           json: doc.data().json,
           name: doc.data().name,
@@ -57,6 +59,7 @@ export class FetchKeyboardDefinitionListByStatusCommand extends AbstractCommand<
             .other_place_source_code_evidence,
           otherPlacePublisherEvidence: doc.data()
             .other_place_publisher_evidence,
+          organizationEvidence: doc.data().organization_evidence,
         };
       }),
     };
