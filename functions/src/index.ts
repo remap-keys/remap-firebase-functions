@@ -12,6 +12,7 @@ import {
 } from './firestore/event-handler';
 import { review } from './admin/review';
 import { FetchKeyboardDefinitionStatsCommand } from './admin/fetch-keyboard-definition-stats-command';
+import { FetchOrganizationByIdCommand } from './admin/fetch-organization-by-id-command';
 import GenerateSitemapXmlCommand from './host/generate-sitemap-xml-command';
 import GenerateCatalogPageCommand from './host/generate-catalog-page-command';
 
@@ -29,6 +30,7 @@ const commandMap: { [p: string]: AbstractCommand } = {
   fetchKeyboardDefinitionDetailById: new FetchKeyboardDefinitionByIdCommand(db),
   updateKeyboardDefinitionStatus: new UpdateKeyboardDefinitionStatusCommand(db),
   fetchKeyboardDefinitionStats: new FetchKeyboardDefinitionStatsCommand(db),
+  fetchOrganizationById: new FetchOrganizationByIdCommand(db),
 };
 
 const funcMap = Object.keys(commandMap).reduce((map, functionName) => {
