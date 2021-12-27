@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [10.x]
+        node-version: [12.x]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: cd functions; npm install
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@v1.4.0
         with:
           args: deploy
         env:

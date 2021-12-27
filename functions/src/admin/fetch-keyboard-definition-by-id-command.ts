@@ -70,6 +70,7 @@ export class FetchKeyboardDefinitionByIdCommand extends AbstractCommand<IFetchKe
         otherPlacePublisherEvidence: documentSnapshot.data()!
           .other_place_publisher_evidence,
         organizationEvidence: documentSnapshot.data()!.organization_evidence,
+        contactInformation: documentSnapshot.data()!.contact_information,
         githubUid: providerData.uid,
         githubDisplayName: providerData.displayName,
         githubEmail: providerData.email,

@@ -60,6 +60,7 @@ export class FetchKeyboardDefinitionListByStatusCommand extends AbstractCommand<
           otherPlacePublisherEvidence: doc.data()
             .other_place_publisher_evidence,
           organizationEvidence: doc.data().organization_evidence,
+          contactInformation: doc.data().contact_information,
         };
       }),
     };
