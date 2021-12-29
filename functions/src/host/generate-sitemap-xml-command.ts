@@ -30,6 +30,15 @@ export default class GenerateSitemapXmlCommand {
       {
         url: '/catalog',
       },
+      {
+        url: '/docs/terms_of_use',
+      },
+      {
+        url: '/docs/review_policy',
+      },
+      {
+        url: '/docs/faq',
+      },
     ];
 
     const keyboardsSnapshot = await this.db
