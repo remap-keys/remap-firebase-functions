@@ -9,7 +9,7 @@ import {
   NeedAdministratorPermission,
   NeedAuthentication,
   ValidateRequired,
-} from './decorators';
+} from '../utils/decorators';
 import * as admin from 'firebase-admin';
 
 interface IFetchKeyboardDefinitionByIdCommandResult extends IResult {

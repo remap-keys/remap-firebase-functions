@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import AbstractCommand from '../abstract-command';
-import { ERROR_NOT_ADMINISTRATOR, ERROR_VALIDATION } from '../utils/types';
+import { ERROR_NOT_ADMINISTRATOR, ERROR_VALIDATION } from './types';
 
 export function NeedAuthentication() {
   return function (

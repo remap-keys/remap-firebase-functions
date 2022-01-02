@@ -6,7 +6,7 @@ import {
   NeedAuthentication,
   ValidateIncludes,
   ValidateRequired,
-} from './decorators';
+} from '../utils/decorators';
 import * as admin from 'firebase-admin';
 import { notifyWithGAS } from '../utils/notification';
 

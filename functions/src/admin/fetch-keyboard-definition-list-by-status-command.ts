@@ -6,7 +6,7 @@ import {
   NeedAuthentication,
   ValidateIncludes,
   ValidateRequired,
-} from './decorators';
+} from '../utils/decorators';
 
 interface IFetchKeyboardDefinitionListByStatusCommandResult extends IResult {
   keyboardDefinitionList: IKeyboardDefinition[];
