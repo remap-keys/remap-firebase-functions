@@ -2,6 +2,9 @@ export const ERROR_NOT_ADMINISTRATOR = 1;
 export const ERROR_VALIDATION = 2;
 export const ERROR_KEYBOARD_DEFINITION_NOT_FOUND = 3;
 export const ERROR_ORGANIZATION_NOT_FOUND = 4;
+export const ERROR_NOT_ORGANIZATION_MEMBER = 5;
+export const ERROR_ADDING_ORGANIZATION_MEMBER_FAILED = 6;
+export const ERROR_DELETING_ORGANIZATION_MEMBER_FAILED = 7;
 
 export type IKeyboardDefinitionStatus =
   | 'draft'
