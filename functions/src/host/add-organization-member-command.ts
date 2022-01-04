@@ -24,6 +24,17 @@ export class AddOrganizationMemberCommand extends AbstractCommand<IResult> {
       const email = data.email;
       const organizationId = data.organizationId;
       const userRecord = await admin.auth().getUserByEmail(email);
+      if (
+        !userRecord.providerData.some(
+          (data) => data.providerId === 'github.com'
+        )
+      ) {
+        return {
+          success: false,
+          errorCode: ERROR_ADDING_ORGANIZATION_MEMBER_FAILED,
+          errorMessage: `The user[${email}] is not logged in to Remap with GitHub account`,
+        };
+      }
       const organizationDocumentSnapshot = await admin
         .firestore()
         .collection('organizations')
