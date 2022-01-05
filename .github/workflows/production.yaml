@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
-        run: cd functions; npm install
+        run: cd functions; yarn install
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@v1.4.0
         with:
