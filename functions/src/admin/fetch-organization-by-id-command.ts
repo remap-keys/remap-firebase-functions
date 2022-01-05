@@ -9,7 +9,7 @@ import {
   NeedAdministratorPermission,
   NeedAuthentication,
   ValidateRequired,
-} from './decorators';
+} from '../utils/decorators';
 
 interface IFetchOrganizationByIdCommandResult extends IResult {
   organization?: IOrganization;

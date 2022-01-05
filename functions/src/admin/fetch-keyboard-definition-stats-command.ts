@@ -1,5 +1,8 @@
 import AbstractCommand from '../abstract-command';
-import { NeedAdministratorPermission, NeedAuthentication } from './decorators';
+import {
+  NeedAdministratorPermission,
+  NeedAuthentication,
+} from '../utils/decorators';
 import {
   IKeyboardDefinitionStatus,
   IResult,

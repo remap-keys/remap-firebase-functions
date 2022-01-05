@@ -15,6 +15,9 @@ import { FetchKeyboardDefinitionStatsCommand } from './admin/fetch-keyboard-defi
 import { FetchOrganizationByIdCommand } from './admin/fetch-organization-by-id-command';
 import GenerateSitemapXmlCommand from './host/generate-sitemap-xml-command';
 import GenerateCatalogPageCommand from './host/generate-catalog-page-command';
+import { FetchOrganizationMembersCommand } from './host/fetch-organization-members-command';
+import { AddOrganizationMemberCommand } from './host/add-organization-member-command';
+import { DeleteOrganizationMemberCommand } from './host/delete-organization-member-command';
 
 const FUNCTIONS_REGION_ASIA = 'asia-northeast1';
 const FUNCTIONS_REGION_US = 'us-central1';
@@ -31,6 +34,9 @@ const commandMap: { [p: string]: AbstractCommand } = {
   updateKeyboardDefinitionStatus: new UpdateKeyboardDefinitionStatusCommand(db),
   fetchKeyboardDefinitionStats: new FetchKeyboardDefinitionStatsCommand(db),
   fetchOrganizationById: new FetchOrganizationByIdCommand(db),
+  fetchOrganizationMembers: new FetchOrganizationMembersCommand(db),
+  addOrganizationMember: new AddOrganizationMemberCommand(db),
+  deleteOrganizationMember: new DeleteOrganizationMemberCommand(db),
 };
 
 const funcMap = Object.keys(commandMap).reduce((map, functionName) => {

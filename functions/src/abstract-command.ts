@@ -30,6 +30,23 @@ abstract class AbstractCommand<R extends IResult = IResult> {
     const administrators = administratorsSnapshot.data()?.users || [];
     return administrators.includes(email);
   }
+
+  async checkUserIsOrganizationMember(
+    uid: string,
+    organizationId: string
+  ): Promise<boolean> {
+    const organizationDocumentSnapshot = await this.db
+      .collection('organizations')
+      .doc('v1')
+      .collection('profiles')
+      .doc(organizationId)
+      .get();
+    if (!organizationDocumentSnapshot.exists) {
+      return false;
+    }
+    const members = organizationDocumentSnapshot.data()?.members || [];
+    return members.includes(uid);
+  }
 }
 
 export default AbstractCommand;
