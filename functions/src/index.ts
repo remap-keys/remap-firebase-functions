@@ -18,6 +18,7 @@ import GenerateCatalogPageCommand from './host/generate-catalog-page-command';
 import { FetchOrganizationMembersCommand } from './host/fetch-organization-members-command';
 import { AddOrganizationMemberCommand } from './host/add-organization-member-command';
 import { DeleteOrganizationMemberCommand } from './host/delete-organization-member-command';
+import { FetchOrganizationsCommand } from './admin/fetch-organizations-command';
 
 const FUNCTIONS_REGION_ASIA = 'asia-northeast1';
 const FUNCTIONS_REGION_US = 'us-central1';
@@ -37,6 +38,7 @@ const commandMap: { [p: string]: AbstractCommand } = {
   fetchOrganizationMembers: new FetchOrganizationMembersCommand(db),
   addOrganizationMember: new AddOrganizationMemberCommand(db),
   deleteOrganizationMember: new DeleteOrganizationMemberCommand(db),
+  fetchOrganizations: new FetchOrganizationsCommand(db),
 };
 
 const funcMap = Object.keys(commandMap).reduce((map, functionName) => {

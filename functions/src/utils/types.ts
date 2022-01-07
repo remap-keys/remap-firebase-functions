@@ -5,6 +5,7 @@ export const ERROR_ORGANIZATION_NOT_FOUND = 4;
 export const ERROR_NOT_ORGANIZATION_MEMBER = 5;
 export const ERROR_ADDING_ORGANIZATION_MEMBER_FAILED = 6;
 export const ERROR_DELETING_ORGANIZATION_MEMBER_FAILED = 7;
+export const ERROR_FETCHING_ORGANIZATIONS_FAILED = 8;
 
 export type IKeyboardDefinitionStatus =
   | 'draft'
@@ -73,6 +74,17 @@ export interface IOrganization {
   readonly members: string[];
   readonly createdAt: Date;
   readonly updatedAt: Date;
+}
+
+export interface IOrganizationMember {
+  readonly uid: string;
+  readonly displayName: string;
+  readonly email: string;
+}
+
+export interface IOrganizationWithMembers {
+  readonly organization: IOrganization;
+  readonly organizationMembers: IOrganizationMember[];
 }
 
 export interface IResult {
