@@ -44,6 +44,26 @@ export class CreateOrganizationCommand extends AbstractCommand<IResult> {
           errorMessage: `The user[${memberEmailAddress}] is not logged in to Remap with GitHub account`,
         };
       }
+      await this.db
+        .collection('organizations')
+        .doc('v1')
+        .collection('profiles')
+        .add({
+          name: data.name,
+          description: data.description,
+          website_url: data.websiteUrl,
+          icon_image_url: data.iconImageUrl,
+          contact_email_address: data.contactEmailAddress,
+          contact_person_name: data.contactPersonName,
+          contact_tel: data.contactTel,
+          contact_address: data.contactAddress,
+          members: [userRecord.uid],
+          created_at: new Date(),
+          updated_at: new Date(),
+        });
+      return {
+        success: true,
+      };
     } catch (error) {
       console.error(error);
       return {

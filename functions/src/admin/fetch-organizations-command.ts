@@ -43,8 +43,8 @@ export class FetchOrganizationsCommand extends AbstractCommand<IFetchOrganizatio
             contactTel: doc.data()!.contact_tel,
             contactAddress: doc.data()!.contact_address,
             members: doc.data()!.members,
-            createdAt: doc.data()!.created_at,
-            updatedAt: doc.data()!.updated_at,
+            createdAt: doc.data()!.created_at.toDate().getTime(),
+            updatedAt: doc.data()!.updated_at.toDate().getTime(),
           };
         }
       );
