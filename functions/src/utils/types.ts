@@ -6,6 +6,7 @@ export const ERROR_NOT_ORGANIZATION_MEMBER = 5;
 export const ERROR_ADDING_ORGANIZATION_MEMBER_FAILED = 6;
 export const ERROR_DELETING_ORGANIZATION_MEMBER_FAILED = 7;
 export const ERROR_FETCHING_ORGANIZATIONS_FAILED = 8;
+export const ERROR_CREATING_ORGANIZATION_FAILED = 9;
 
 export type IKeyboardDefinitionStatus =
   | 'draft'

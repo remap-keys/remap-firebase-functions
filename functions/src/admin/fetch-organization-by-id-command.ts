@@ -50,8 +50,8 @@ export class FetchOrganizationByIdCommand extends AbstractCommand<IFetchOrganiza
       contactTel: documentSnapshot.data()!.contact_tel,
       contactAddress: documentSnapshot.data()!.contact_address,
       members: documentSnapshot.data()!.members,
-      createdAt: documentSnapshot.data()!.created_at,
-      updatedAt: documentSnapshot.data()!.updated_at,
+      createdAt: documentSnapshot.data()!.created_at.toDate().getTime(),
+      updatedAt: documentSnapshot.data()!.updated_at.toDate().getTime(),
     };
     const members: IOrganizationMember[] = [];
     for (const memberUid of organization.members) {

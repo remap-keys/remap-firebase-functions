@@ -19,6 +19,7 @@ import { FetchOrganizationMembersCommand } from './host/fetch-organization-membe
 import { AddOrganizationMemberCommand } from './host/add-organization-member-command';
 import { DeleteOrganizationMemberCommand } from './host/delete-organization-member-command';
 import { FetchOrganizationsCommand } from './admin/fetch-organizations-command';
+import { CreateOrganizationCommand } from './admin/create-organization-command';
 
 const FUNCTIONS_REGION_ASIA = 'asia-northeast1';
 const FUNCTIONS_REGION_US = 'us-central1';
@@ -39,6 +40,7 @@ const commandMap: { [p: string]: AbstractCommand } = {
   addOrganizationMember: new AddOrganizationMemberCommand(db),
   deleteOrganizationMember: new DeleteOrganizationMemberCommand(db),
   fetchOrganizations: new FetchOrganizationsCommand(db),
+  createOrganization: new CreateOrganizationCommand(db),
 };
 
 const funcMap = Object.keys(commandMap).reduce((map, functionName) => {
