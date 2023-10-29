@@ -2,11 +2,11 @@
   "name": "functions",
   "scripts": {
     "build": "tsc",
-    "serve": "npm run build && firebase emulators:start --only functions",
-    "shell": "npm run build && firebase functions:shell",
-    "start": "npm run shell",
-    "prepare-deploy": "npm run build && firebase functions:config:set discord.webhook=$DISCORD_WEBHOOK notification.url=$NOTIFICATION_URL jwt.secret=$JWT_SECRET",
-    "deploy": "npm run prepare-deploy && firebase deploy --only functions",
+    "serve": "yarn build && firebase emulators:start --only functions",
+    "shell": "yarn build && firebase functions:shell",
+    "start": "yarn shell",
+    "prepare-deploy": "yarn build && firebase functions:config:set discord.webhook=$DISCORD_WEBHOOK notification.url=$NOTIFICATION_URL jwt.secret=$JWT_SECRET",
+    "deploy": "yarn prepare-deploy && firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
   "engines": {
@@ -17,8 +17,8 @@
     "@google-cloud/pubsub": "^4.0.6",
     "@google-cloud/tasks": "^4.0.1",
     "axios": "^0.21.1",
-    "firebase-admin": "^8.10.0",
-    "firebase-functions": "^3.6.1",
+    "firebase-admin": "^11.11.0",
+    "firebase-functions": "^4.4.1",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
     "node-html-parser": "^4.1.2",
@@ -31,7 +31,7 @@
     "@types/qs": "^6.9.7",
     "firebase-functions-test": "^0.2.0",
     "prettier": "^2.2.1",
-    "typescript": "^4.3.5"
+    "typescript": "^5.2.2"
   },
   "private": true
 }
