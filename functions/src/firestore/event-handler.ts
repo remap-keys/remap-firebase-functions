@@ -68,6 +68,9 @@ export const backupFirestore = functions
   .pubsub.schedule('every 24 hours')
   .onRun((context) => {
     const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
+    if (projectId == undefined) {
+      throw new Error('Project ID not found');
+    }
     const databaseName = client.databasePath(projectId, '(default)');
     return client
       .exportDocuments({

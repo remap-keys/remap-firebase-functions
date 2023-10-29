@@ -19,16 +19,16 @@
     "axios": "^0.21.1",
     "firebase-admin": "^11.11.0",
     "firebase-functions": "^4.4.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.2",
     "moment": "^2.29.1",
     "node-html-parser": "^4.1.2",
-    "qs": "^6.10.1",
+    "qs": "^6.11.2",
     "sitemap": "^7.0.0"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^8.5.0",
+    "@types/jsonwebtoken": "^9.0.4",
     "@types/moment": "^2.13.0",
-    "@types/qs": "^6.9.7",
+    "@types/qs": "^6.9.9",
     "firebase-functions-test": "^0.2.0",
     "prettier": "^2.2.1",
     "typescript": "^5.2.2"

@@ -1,5 +1,4 @@
 import AbstractCommand from '../abstract-command';
-import { CallableContext } from 'firebase-functions/lib/providers/https';
 import { ERROR_KEYBOARD_DEFINITION_NOT_FOUND, IResult } from '../utils/types';
 import {
   NeedAdministratorPermission,
@@ -9,6 +8,7 @@ import {
 } from '../utils/decorators';
 import * as admin from 'firebase-admin';
 import { notifyWithGAS } from '../utils/notification';
+import * as functions from "firebase-functions";
 
 export class UpdateKeyboardDefinitionStatusCommand extends AbstractCommand {
   @NeedAuthentication()
@@ -17,7 +17,7 @@ export class UpdateKeyboardDefinitionStatusCommand extends AbstractCommand {
   @ValidateIncludes({
     status: ['draft', 'in_review', 'rejected', 'approved'],
   })
-  async execute(data: any, context: CallableContext): Promise<IResult> {
+  async execute(data: any, context: functions.https.CallableContext): Promise<IResult> {
     const documentSnapshot = await this.db
       .collection('keyboards')
       .doc('v2')
