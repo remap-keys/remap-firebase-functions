@@ -4,7 +4,7 @@ import { NeedAuthentication, ValidateRequired } from '../utils/decorators';
 import { CloudTasksClient } from '@google-cloud/tasks';
 import { google } from '@google-cloud/tasks/build/protos/protos';
 import HttpMethod = google.cloud.tasks.v2.HttpMethod;
-import * as functions from "firebase-functions";
+import * as functions from 'firebase-functions';
 
 const PROJECT_ID = 'remap-b2d08';
 const LOCATION = 'asia-northeast1';
@@ -13,8 +13,11 @@ const BUILD_SERVER_URL = 'https://remap-build-server-l3esb446ua-an.a.run.app';
 
 export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> {
   @NeedAuthentication()
-  @ValidateRequired(['keyboardDefinitionId'])
-  async execute(data: any, context: functions.https.CallableContext): Promise<IResult> {
+  @ValidateRequired(['taskId'])
+  async execute(
+    data: any,
+    context: functions.https.CallableContext
+  ): Promise<IResult> {
     const taskId = data.taskId;
     const uid = context.auth!.uid;
 
