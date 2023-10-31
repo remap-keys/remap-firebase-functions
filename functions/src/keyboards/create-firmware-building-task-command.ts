@@ -1,5 +1,5 @@
 import AbstractCommand from '../abstract-command';
-import { ERROR_TASK_NOT_FOUND, IResult } from '../utils/types';
+import { ERROR_UNCOMPLETED_TASK_EXISTS, IResult } from '../utils/types';
 import { NeedAuthentication, ValidateRequired } from '../utils/decorators';
 import { CloudTasksClient } from '@google-cloud/tasks';
 import { google } from '@google-cloud/tasks/build/protos/protos';
@@ -13,35 +13,44 @@ const BUILD_SERVER_URL = 'https://remap-build-server-l3esb446ua-an.a.run.app';
 
 export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> {
   @NeedAuthentication()
-  @ValidateRequired(['taskId'])
+  @ValidateRequired(['firmwareId'])
   async execute(
     data: any,
     context: functions.https.CallableContext
   ): Promise<IResult> {
-    const taskId = data.taskId;
+    const firmwareId = data.firmwareId;
     const uid = context.auth!.uid;
 
-    const doc = await this.db
+    const querySnapshot = await this.db
       .collection('build')
       .doc('v1')
       .collection('tasks')
-      .doc(taskId)
+      .where('uid', '==', uid)
+      .where('status', 'in', ['waiting', 'building'])
       .get();
-    if (!doc.exists) {
+    if (0 < querySnapshot.size) {
       return {
         success: false,
-        errorCode: ERROR_TASK_NOT_FOUND,
-        errorMessage: `The task [${taskId}] is not found (1)`,
+        errorCode: ERROR_UNCOMPLETED_TASK_EXISTS,
+        errorMessage: `The uncompleted task you registered exists.`,
       };
     }
-    const taskUid = doc.data()!.uid;
-    if (uid !== taskUid) {
-      return {
-        success: false,
-        errorCode: ERROR_TASK_NOT_FOUND,
-        errorMessage: `The task [${taskId}] is not found (2)`,
-      };
-    }
+
+    const ref = await this.db
+      .collection('build')
+      .doc('v1')
+      .collection('tasks')
+      .add({
+        uid,
+        firmwareId,
+        status: 'waiting',
+        firmwareFilePath: '',
+        stdout: '',
+        stderr: '',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+    const taskId = ref.id;
 
     const client = new CloudTasksClient();
     const parent = client.queuePath(PROJECT_ID, LOCATION, QUEUE);
