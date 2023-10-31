@@ -47,8 +47,8 @@ export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> 
         firmwareFilePath: '',
         stdout: '',
         stderr: '',
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
     const taskId = ref.id;
 
