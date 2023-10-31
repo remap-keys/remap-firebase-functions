@@ -1,9 +1,5 @@
 import AbstractCommand from '../abstract-command';
-import {
-  ERROR_TASK_NOT_FOUND,
-  ERROR_UNCOMPLETED_TASK_EXISTS,
-  IResult,
-} from '../utils/types';
+import { ERROR_TASK_NOT_FOUND, IResult } from '../utils/types';
 import { NeedAuthentication, ValidateRequired } from '../utils/decorators';
 import { CloudTasksClient } from '@google-cloud/tasks';
 import { google } from '@google-cloud/tasks/build/protos/protos';
@@ -24,22 +20,6 @@ export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> 
   ): Promise<IResult> {
     const taskId = data.taskId;
     const uid = context.auth!.uid;
-
-    const querySnapshot = await this.db
-      .collection('build')
-      .doc('v1')
-      .collection('tasks')
-      .where('uid', '==', uid)
-      .where('status', 'in', ['waiting', 'building'])
-      .get();
-    const filtered = querySnapshot.docs.filter((doc) => doc.id !== taskId);
-    if (0 < filtered.length) {
-      return {
-        success: false,
-        errorCode: ERROR_UNCOMPLETED_TASK_EXISTS,
-        errorMessage: `The uncompleted task you registered exists.`,
-      };
-    }
 
     const doc = await this.db
       .collection('build')
