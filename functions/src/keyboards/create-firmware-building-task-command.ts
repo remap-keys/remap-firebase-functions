@@ -36,7 +36,7 @@ export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> 
       return {
         success: false,
         errorCode: ERROR_UNCOMPLETED_TASK_EXISTS,
-        errorMessage: `The uncompleted task exists.`,
+        errorMessage: `The uncompleted task you registered exists.`,
       };
     }
 
