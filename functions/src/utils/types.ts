@@ -8,7 +8,6 @@ export const ERROR_DELETING_ORGANIZATION_MEMBER_FAILED = 7;
 export const ERROR_FETCHING_ORGANIZATIONS_FAILED = 8;
 export const ERROR_CREATING_ORGANIZATION_FAILED = 9;
 export const ERROR_TASK_NOT_FOUND = 10;
-export const ERROR_UNCOMPLETED_TASK_EXISTS = 11;
 
 export type IKeyboardDefinitionStatus =
   | 'draft'
