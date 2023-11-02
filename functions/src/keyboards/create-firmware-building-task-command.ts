@@ -13,12 +13,13 @@ const BUILD_SERVER_URL = 'https://remap-build-server-l3esb446ua-an.a.run.app';
 
 export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> {
   @NeedAuthentication()
-  @ValidateRequired(['firmwareId'])
+  @ValidateRequired(['firmwareId', 'parametersJson'])
   async execute(
     data: any,
     context: functions.https.CallableContext
   ): Promise<IResult> {
     const firmwareId = data.firmwareId;
+    const parametersJson = data.parametersJson;
     const uid = context.auth!.uid;
 
     const querySnapshot = await this.db
@@ -47,6 +48,7 @@ export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> 
         firmwareFilePath: '',
         stdout: '',
         stderr: '',
+        parametersJson,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
