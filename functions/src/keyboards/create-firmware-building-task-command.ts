@@ -10,7 +10,6 @@ const PROJECT_ID = 'remap-b2d08';
 const LOCATION = 'asia-northeast1';
 const QUEUE = 'build-task-queue';
 const BUILD_SERVER_URL = 'http://35.213.40.208:8080';
-const BUILD_SERVER_TASK_AUTH_SA = `remap-build-server-task-auth@${PROJECT_ID}.iam.gserviceaccount.com`;
 
 export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> {
   @NeedAuthentication()
@@ -65,9 +64,6 @@ export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> 
         },
         httpMethod: HttpMethod.GET,
         url: `${BUILD_SERVER_URL}/build?uid=${uid}&taskId=${taskId}`,
-        oidcToken: {
-          serviceAccountEmail: BUILD_SERVER_TASK_AUTH_SA,
-        },
       },
     };
     const request = {
