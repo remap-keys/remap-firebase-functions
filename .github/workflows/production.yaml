@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: cd functions; yarn install
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@v12.6.2
         with:
           args: deploy
         env:
