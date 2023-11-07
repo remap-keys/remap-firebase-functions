@@ -9,7 +9,8 @@ import * as functions from 'firebase-functions';
 const PROJECT_ID = 'remap-b2d08';
 const LOCATION = 'asia-northeast1';
 const QUEUE = 'build-task-queue';
-const BUILD_SERVER_URL = 'https://remap-build-server-l3esb446ua-an.a.run.app';
+const BUILD_SERVER_URL = 'https://build.remap-keys.app';
+const BUILD_SERVER_AUTH_SA_EMAIL = `remap-build-server-task-auth@${PROJECT_ID}.iam.gserviceaccount.com`;
 
 export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> {
   @NeedAuthentication()
@@ -64,6 +65,9 @@ export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> 
         },
         httpMethod: HttpMethod.GET,
         url: `${BUILD_SERVER_URL}/build?uid=${uid}&taskId=${taskId}`,
+        oidcToken: {
+          serviceAccountEmail: BUILD_SERVER_AUTH_SA_EMAIL,
+        },
       },
     };
     const request = {
