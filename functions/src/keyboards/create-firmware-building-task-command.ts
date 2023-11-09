@@ -14,12 +14,13 @@ const BUILD_SERVER_AUTH_SA_EMAIL = `remap-build-server-task-auth@${PROJECT_ID}.i
 
 export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> {
   @NeedAuthentication()
-  @ValidateRequired(['firmwareId', 'parametersJson'])
+  @ValidateRequired(['firmwareId', 'description', 'parametersJson'])
   async execute(
     data: any,
     context: functions.https.CallableContext
   ): Promise<IResult> {
     const firmwareId = data.firmwareId;
+    const description = data.description;
     const parametersJson = data.parametersJson;
     const uid = context.auth!.uid;
 
@@ -49,6 +50,7 @@ export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> 
         firmwareFilePath: '',
         stdout: '',
         stderr: '',
+        description,
         parametersJson,
         createdAt: new Date(),
         updatedAt: new Date(),
