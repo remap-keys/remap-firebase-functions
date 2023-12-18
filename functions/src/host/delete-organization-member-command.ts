@@ -18,7 +18,7 @@ export class DeleteOrganizationMemberCommand extends AbstractCommand<IResult> {
   @ValidateRequired(['organizationId', 'uid'])
   async execute(
     data: any,
-    context: functions.https.CallableContext
+    _context: functions.https.CallableContext
   ): Promise<IResult> {
     try {
       const organizationId = data.organizationId;

@@ -18,7 +18,7 @@ export class AddOrganizationMemberCommand extends AbstractCommand<IResult> {
   @NeedOrganizationMember()
   async execute(
     data: any,
-    context: functions.https.CallableContext
+    _context: functions.https.CallableContext
   ): Promise<IResult> {
     try {
       const email = data.email;

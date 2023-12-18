@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18.x]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: cd functions; yarn install
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@v12.6.2
+        uses: w9jds/firebase-action@master
         with:
           args: deploy
         env:

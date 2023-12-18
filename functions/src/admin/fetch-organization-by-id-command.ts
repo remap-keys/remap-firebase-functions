@@ -24,7 +24,7 @@ export class FetchOrganizationByIdCommand extends AbstractCommand<IFetchOrganiza
   @ValidateRequired(['id'])
   async execute(
     data: any,
-    context: functions.https.CallableContext
+    _context: functions.https.CallableContext
   ): Promise<IFetchOrganizationByIdCommandResult> {
     const documentSnapshot = await this.db
       .collection('organizations')

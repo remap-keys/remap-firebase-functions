@@ -8,7 +8,7 @@ import {
 } from '../utils/decorators';
 import * as admin from 'firebase-admin';
 import { notifyWithGAS } from '../utils/notification';
-import * as functions from "firebase-functions";
+import * as functions from 'firebase-functions';
 
 export class UpdateKeyboardDefinitionStatusCommand extends AbstractCommand {
   @NeedAuthentication()
@@ -17,7 +17,10 @@ export class UpdateKeyboardDefinitionStatusCommand extends AbstractCommand {
   @ValidateIncludes({
     status: ['draft', 'in_review', 'rejected', 'approved'],
   })
-  async execute(data: any, context: functions.https.CallableContext): Promise<IResult> {
+  async execute(
+    data: any,
+    _context: functions.https.CallableContext
+  ): Promise<IResult> {
     const documentSnapshot = await this.db
       .collection('keyboards')
       .doc('v2')
