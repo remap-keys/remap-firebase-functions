@@ -18,6 +18,8 @@ type ICreateKeyboardStatisticsResult = {
   statistics?: IKeyboardStatistics;
 } & IResult;
 
+const UNIQUE_USER_COUNT_THRESHOLD: number = 2;
+
 export class CreateKeyboardStatisticsCommand extends AbstractCommand<ICreateKeyboardStatisticsResult> {
   @NeedAuthentication()
   @ValidateRequired(['keyboardDefinitionId'])
@@ -53,21 +55,29 @@ export class CreateKeyboardStatisticsCommand extends AbstractCommand<ICreateKeyb
     const flashingKeymapDateValueMap: { [key: string]: number } =
       CreateKeyboardStatisticsCommand.createDefaultDateValueMap();
 
-    querySnapshot.forEach((doc) => {
-      const createdAt = doc.data().createdAt.toDate();
-      const date = createdAt.toISOString().substring(0, 10);
-      if (doc.data().operation === 'configure/open') {
-        if (openingKeyboardDateValueMap[date] == undefined) {
-          openingKeyboardDateValueMap[date] = 0;
+    const uniqueUserIds: Set<string> = new Set();
+    for (const doc of querySnapshot.docs) {
+      uniqueUserIds.add(doc.data().uid);
+    }
+
+    // If there is only one user, the statistics is not returned because of a privacy issue.
+    if (UNIQUE_USER_COUNT_THRESHOLD <= uniqueUserIds.size) {
+      for (const doc of querySnapshot.docs) {
+        const createdAt = doc.data().createdAt.toDate();
+        const date = createdAt.toISOString().substring(0, 10);
+        if (doc.data().operation === 'configure/open') {
+          if (openingKeyboardDateValueMap[date] == undefined) {
+            openingKeyboardDateValueMap[date] = 0;
+          }
+          openingKeyboardDateValueMap[date] += 1;
+        } else if (doc.data().operation === 'configure/flash') {
+          if (flashingKeymapDateValueMap[date] == undefined) {
+            flashingKeymapDateValueMap[date] = 0;
+          }
+          flashingKeymapDateValueMap[date] += 1;
         }
-        openingKeyboardDateValueMap[date] += 1;
-      } else if (doc.data().operation === 'configure/flash') {
-        if (flashingKeymapDateValueMap[date] == undefined) {
-          flashingKeymapDateValueMap[date] = 0;
-        }
-        flashingKeymapDateValueMap[date] += 1;
       }
-    });
+    }
 
     const statistics: IKeyboardStatistics = {
       counts_of_opening_keyboard: {
