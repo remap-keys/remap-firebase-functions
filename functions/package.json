@@ -28,6 +28,7 @@
     "sitemap": "^7.0.0"
   },
   "devDependencies": {
+    "@types/express-serve-static-core": "^4.17.21",
     "@types/jest": "^29.5.11",
     "@types/jsonwebtoken": "^9.0.4",
     "@types/moment": "^2.13.0",
