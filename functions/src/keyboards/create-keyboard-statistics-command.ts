@@ -122,11 +122,11 @@ export class CreateKeyboardStatisticsCommand extends AbstractCommand<ICreateKeyb
       };
     }
     const keyboardDefinition = keyboardDefinitionSnapshot.data()!;
-    if (keyboardDefinition.uid !== uid) {
+    if (keyboardDefinition.author_uid !== uid) {
       return {
         success: false,
         errorCode: ERROR_KEYBOARD_DEFINITION_NOT_FOUND,
-        errorMessage: `The keyboard definition ${keyboardDefinitionId} is not found.`,
+        errorMessage: `The user is not an owner of the keyboard definition ${keyboardDefinitionId}.`,
       };
     }
     return {
