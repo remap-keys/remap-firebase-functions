@@ -28,7 +28,7 @@ export class CreateOrganizationCommand extends AbstractCommand<IResult> {
   ])
   async execute(
     data: any,
-    context: functions.https.CallableContext
+    _context: functions.https.CallableContext
   ): Promise<IResult> {
     try {
       const memberEmailAddress = data.memberEmailAddress;

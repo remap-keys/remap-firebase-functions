@@ -21,8 +21,8 @@ export class FetchOrganizationsCommand extends AbstractCommand<IFetchOrganizatio
   @NeedAuthentication()
   @NeedAdministratorPermission()
   async execute(
-    data: any,
-    context: functions.https.CallableContext
+    _data: any,
+    _context: functions.https.CallableContext
   ): Promise<IFetchOrganizationsResult> {
     try {
       const organizationsQueryDocumentSnapshot = await this.db
@@ -30,8 +30,8 @@ export class FetchOrganizationsCommand extends AbstractCommand<IFetchOrganizatio
         .doc('v1')
         .collection('profiles')
         .get();
-      const organizations: IOrganization[] = organizationsQueryDocumentSnapshot.docs.map(
-        (doc) => {
+      const organizations: IOrganization[] =
+        organizationsQueryDocumentSnapshot.docs.map((doc) => {
           return {
             id: doc.id,
             name: doc.data()!.name,
@@ -46,8 +46,7 @@ export class FetchOrganizationsCommand extends AbstractCommand<IFetchOrganizatio
             createdAt: doc.data()!.created_at.toDate().getTime(),
             updatedAt: doc.data()!.updated_at.toDate().getTime(),
           };
-        }
-      );
+        });
       const organizationWithMembersList: IOrganizationWithMembers[] = [];
       for (const organization of organizations) {
         const members: IOrganizationMember[] = [];

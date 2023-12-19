@@ -22,8 +22,8 @@ export class FetchKeyboardDefinitionStatsCommand extends AbstractCommand<IFetchK
   @NeedAuthentication()
   @NeedAdministratorPermission()
   async execute(
-    data: any,
-    context: functions.https.CallableContext
+    _data: any,
+    _context: functions.https.CallableContext
   ): Promise<IFetchKeyboardDefinitionStatsResult> {
     const querySnapshot = await this.db
       .collection('keyboards')

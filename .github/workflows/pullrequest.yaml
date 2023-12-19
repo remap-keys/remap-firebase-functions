@@ -1,0 +1,24 @@
+name: Build and Test for Pull Request
+on:
+  pull_request:
+    types: [opened, synchronize]
+jobs:
+  deploy:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: cd functions; yarn install
+      - name: Build and Test
+        run: cd functions; yarn build && yarn test

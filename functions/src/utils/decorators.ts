@@ -35,8 +35,9 @@ export function NeedAdministratorPermission() {
   ) {
     const originalMethod = descriptor.value;
     descriptor.value = function (...args: any[]) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const self = this;
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve, _reject) => {
         const context = args[1] as functions.https.CallableContext;
         const uid = context.auth!.uid;
         (self as AbstractCommand).checkUserIsAdministrator
@@ -69,8 +70,9 @@ export function NeedOrganizationMember() {
   ) {
     const originalMethod = descriptor.value;
     descriptor.value = function (...args: any[]) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const self = this;
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve, _reject) => {
         const data = args[0];
         const organizationId = data.organizationId;
         const context = args[1] as functions.https.CallableContext;

@@ -21,6 +21,7 @@ import { DeleteOrganizationMemberCommand } from './host/delete-organization-memb
 import { FetchOrganizationsCommand } from './admin/fetch-organizations-command';
 import { CreateOrganizationCommand } from './admin/create-organization-command';
 import { CreateFirmwareBuildingTaskCommand } from './keyboards/create-firmware-building-task-command';
+import { CreateKeyboardStatisticsCommand } from './keyboards/create-keyboard-statistics-command';
 
 const FUNCTIONS_REGION_ASIA = 'asia-northeast1';
 const FUNCTIONS_REGION_US = 'us-central1';
@@ -30,9 +31,8 @@ admin.initializeApp(functions.config().firebase);
 const db = admin.firestore();
 
 const commandMap: { [p: string]: AbstractCommand } = {
-  fetchKeyboardDefinitionListByStatus: new FetchKeyboardDefinitionListByStatusCommand(
-    db
-  ),
+  fetchKeyboardDefinitionListByStatus:
+    new FetchKeyboardDefinitionListByStatusCommand(db),
   fetchKeyboardDefinitionDetailById: new FetchKeyboardDefinitionByIdCommand(db),
   updateKeyboardDefinitionStatus: new UpdateKeyboardDefinitionStatusCommand(db),
   fetchKeyboardDefinitionStats: new FetchKeyboardDefinitionStatsCommand(db),
@@ -43,16 +43,20 @@ const commandMap: { [p: string]: AbstractCommand } = {
   fetchOrganizations: new FetchOrganizationsCommand(db),
   createOrganization: new CreateOrganizationCommand(db),
   createFirmwareBuildingTask: new CreateFirmwareBuildingTaskCommand(db),
+  createKeyboardStatistics: new CreateKeyboardStatisticsCommand(db),
 };
 
-const funcMap = Object.keys(commandMap).reduce((map, functionName) => {
-  map[functionName] = functions.region(FUNCTIONS_REGION_ASIA).https.onCall(
-    async (data, context): Promise<IResult> => {
-      return await commandMap[functionName].execute(data, context);
-    }
-  );
-  return map;
-}, {} as { [p: string]: any });
+const funcMap = Object.keys(commandMap).reduce(
+  (map, functionName) => {
+    map[functionName] = functions
+      .region(FUNCTIONS_REGION_ASIA)
+      .https.onCall(async (data, context): Promise<IResult> => {
+        return await commandMap[functionName].execute(data, context);
+      });
+    return map;
+  },
+  {} as { [p: string]: any }
+);
 
 funcMap['definitionCreateHook'] = definitionCreateHook;
 funcMap['definitionUpdateHook'] = definitionUpdateHook;
