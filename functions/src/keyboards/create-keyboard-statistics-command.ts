@@ -132,12 +132,27 @@ export class CreateKeyboardStatisticsCommand extends AbstractCommand<ICreateKeyb
       };
     }
     const keyboardDefinition = keyboardDefinitionSnapshot.data()!;
-    if (keyboardDefinition.author_uid !== uid) {
-      return {
-        success: false,
-        errorCode: ERROR_KEYBOARD_DEFINITION_NOT_FOUND,
-        errorMessage: `The user is not an owner of the keyboard definition ${keyboardDefinitionId}.`,
-      };
+    if (keyboardDefinition.author_type === 'organization') {
+      const organizationId = keyboardDefinition.organization_id;
+      const result = await this.checkUserIsOrganizationMember(
+        uid,
+        organizationId
+      );
+      if (!result) {
+        return {
+          success: false,
+          errorCode: ERROR_KEYBOARD_DEFINITION_NOT_FOUND,
+          errorMessage: `The user is not a member of the organization ${organizationId}.`,
+        };
+      }
+    } else {
+      if (keyboardDefinition.author_uid !== uid) {
+        return {
+          success: false,
+          errorCode: ERROR_KEYBOARD_DEFINITION_NOT_FOUND,
+          errorMessage: `The user is not an owner of the keyboard definition ${keyboardDefinitionId}.`,
+        };
+      }
     }
     return {
       success: true,
