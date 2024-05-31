@@ -23,7 +23,7 @@ export default class GenerateCatalogPageCommand {
   }
 
   private static async fetchRemapIndexHtml(): Promise<string> {
-    const response = await axios.default.get('http://localhost:3000/');
+    const response = await axios.default.get('https://remap-keys.app/');
     if (response.status === 200) {
       return response.data;
     } else {
