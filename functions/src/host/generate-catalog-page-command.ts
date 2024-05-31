@@ -23,7 +23,7 @@ export default class GenerateCatalogPageCommand {
   }
 
   private static async fetchRemapIndexHtml(): Promise<string> {
-    const response = await axios.default.get('https://remap-keys.app/');
+    const response = await axios.default.get('http://localhost:3000/');
     if (response.status === 200) {
       return response.data;
     } else {
@@ -48,26 +48,41 @@ export default class GenerateCatalogPageCommand {
       const result = await this.fetchDefinitionDocument(definitionDocumentId);
       if (result.exists) {
         const title = root.querySelector('title');
-        title.set_content(`${result.definition!.name} - Remap`);
+        if (title !== null) {
+          title.set_content(`${result.definition!.name} - Remap`);
+        }
         const ogTitle = root.querySelector('meta[property="og:title"]');
-        ogTitle.setAttribute('content', `${result.definition!.name} - Remap`);
+        if (ogTitle !== null) {
+          ogTitle.setAttribute('content', `${result.definition!.name} - Remap`);
+        }
         if (result.definition!.description) {
           const description = root.querySelector('meta[name="description"]');
-          description.setAttribute('content', result.definition!.description);
+          if (description !== null) {
+            description.setAttribute('content', result.definition!.description);
+          }
           const ogDescription = root.querySelector(
             'meta[property="og:description"]'
           );
-          ogDescription.setAttribute('content', result.definition!.description);
+          if (ogDescription !== null) {
+            ogDescription.setAttribute(
+              'content',
+              result.definition!.description
+            );
+          }
         }
         if (result.definition!.image) {
           const ogImage = root.querySelector('meta[property="og:image"]');
-          ogImage.setAttribute('content', result.definition!.image);
+          if (ogImage !== null) {
+            ogImage.setAttribute('content', result.definition!.image);
+          }
         }
         const ogUrl = root.querySelector('meta[property="og:url"]');
-        ogUrl.setAttribute(
-          'content',
-          `https://remap-keys.app/catalog/${result.definition!.id}`
-        );
+        if (ogUrl !== null) {
+          ogUrl.setAttribute(
+            'content',
+            `https://remap-keys.app/catalog/${result.definition!.id}`
+          );
+        }
       }
     }
     res.send(root.toString());
