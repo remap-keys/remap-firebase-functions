@@ -12,7 +12,7 @@
     "test": "yarn jest"
   },
   "engines": {
-    "node": "18"
+    "node": "20"
   },
   "main": "lib/index.js",
   "dependencies": {
@@ -23,7 +23,7 @@
     "firebase-functions": "^4.4.1",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.29.1",
-    "node-html-parser": "^4.1.2",
+    "node-html-parser": "^6.1.13",
     "qs": "^6.11.2",
     "sitemap": "^7.0.0"
   },
@@ -64,5 +64,6 @@
       "prettier --write",
       "git add"
     ]
-  }
+  },
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
 }
