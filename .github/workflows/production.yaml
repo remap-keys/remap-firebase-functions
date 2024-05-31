@@ -12,19 +12,19 @@ jobs:
         node-version: [20.x]
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: main
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install Firebase Tools
+        run: npm install -g firebase-tools
       - name: Install dependencies
         run: cd functions; yarn install
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@v13.5.2
-        with:
-          args: deploy
+        run: firebase deploy --token ${{ secrets.FIREBASE_TOKEN_PRODUCTION }} --project remap-b2d08
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_PRODUCTION }}
           PROJECT_ID: remap-b2d08
