@@ -2,8 +2,8 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { SitemapStream, streamToPromise } from 'sitemap';
 import { Readable } from 'stream';
-import * as moment from 'moment';
 import { createGzip } from 'zlib';
+import { formatISO } from 'date-fns';
 
 type IUrlEntry = {
   url: string;
@@ -50,7 +50,7 @@ export default class GenerateSitemapXmlCommand {
     for (const keyboard of keyboardsSnapshot.docs) {
       urlEntries.push({
         url: `/catalog/${keyboard.id}`,
-        lastmod: moment(keyboard.data().updated_at.toDate()).toISOString(),
+        lastmod: formatISO(keyboard.data().updated_at.toDate()),
       });
     }
 
