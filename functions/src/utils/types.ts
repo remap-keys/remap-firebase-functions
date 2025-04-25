@@ -8,6 +8,8 @@ export const ERROR_DELETING_ORGANIZATION_MEMBER_FAILED = 7;
 export const ERROR_FETCHING_ORGANIZATIONS_FAILED = 8;
 export const ERROR_CREATING_ORGANIZATION_FAILED = 9;
 export const ERROR_UNCOMPLETED_TASK_EXISTS = 10;
+export const ERROR_ORDER_CREATE_FAILED = 11;
+export const ERROR_CAPTURE_ORDER_FAILED = 12;
 
 export type IKeyboardDefinitionStatus =
   | 'draft'
@@ -94,3 +96,12 @@ export interface IResult {
   errorCode?: number;
   errorMessage?: string;
 }
+
+export const RemainingPurchaseStatus = {
+  order_captured: 'order_captured',
+  order_created: 'order_created',
+  creating_order: 'creating_order',
+  capturing_order: 'capturing_order',
+} as const;
+export type IRemainingPurchaseStatus =
+  (typeof RemainingPurchaseStatus)[keyof typeof RemainingPurchaseStatus];

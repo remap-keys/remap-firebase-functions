@@ -6,7 +6,7 @@
     "serve": "yarn build && firebase emulators:start --only functions",
     "shell": "yarn build && firebase functions:shell",
     "start": "yarn shell",
-    "prepare-deploy": "yarn build && yarn test && firebase functions:config:set discord.webhook=$DISCORD_WEBHOOK notification.url=$NOTIFICATION_URL jwt.secret=$JWT_SECRET",
+    "prepare-deploy": "yarn build && yarn test",
     "deploy": "yarn prepare-deploy && firebase deploy --only functions",
     "logs": "firebase functions:log",
     "test": "yarn jest",
@@ -19,6 +19,7 @@
   "dependencies": {
     "@google-cloud/pubsub": "^4.11.0",
     "@google-cloud/tasks": "^6.0.1",
+    "@paypal/paypal-server-sdk": "^1.0.0",
     "axios": "^0.21.1",
     "date-fns": "^4.1.0",
     "firebase-admin": "^13.3.0",

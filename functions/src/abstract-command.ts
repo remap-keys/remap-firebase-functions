@@ -18,6 +18,8 @@ abstract class AbstractCommand<R extends IResult = IResult> {
     secrets: {
       jwtSecret: string;
       notificationUrl: string;
+      paypalClientId: string;
+      paypalClientSecret: string;
     }
   ): Promise<R>;
 
