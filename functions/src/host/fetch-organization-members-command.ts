@@ -9,10 +9,10 @@ import {
   NeedOrganizationMember,
   ValidateRequired,
 } from '../utils/decorators';
-import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import DocumentSnapshot = admin.firestore.DocumentSnapshot;
 import DocumentData = admin.firestore.DocumentData;
+import { CallableRequest, CallableResponse } from 'firebase-functions/https';
 
 type IOrganizationMember = {
   uid: string;
@@ -30,29 +30,29 @@ export class FetchOrganizationMembersCommand extends AbstractCommand<IFetchOrgan
   @ValidateRequired(['organizationId'])
   @NeedOrganizationMember()
   async execute(
-    data: any,
-    context: functions.https.CallableContext
+    request: CallableRequest,
+    _response: CallableResponse | undefined
   ): Promise<IFetchOrganizationMemberDataCommandResult> {
     const organizationDocumentSnapshot = await this.db
       .collection('organizations')
       .doc('v1')
       .collection('profiles')
-      .doc(data.organizationId)
+      .doc(request.data.organizationId)
       .get();
     if (!organizationDocumentSnapshot.exists) {
       return {
         success: false,
         errorCode: ERROR_ORGANIZATION_NOT_FOUND,
-        errorMessage: `Organization not found: ${data.organizationId}`,
+        errorMessage: `Organization not found: ${request.data.organizationId}`,
       };
     }
     const organization = FetchOrganizationMembersCommand.createOrganization(
       organizationDocumentSnapshot
     );
-    const uid = context.auth!.uid;
+    const uid = request.auth!.uid;
     const members: IOrganizationMember[] = [];
     for (const memberUid of organization.members) {
-      const userRecord = await admin.auth().getUser(memberUid);
+      const userRecord = await this.auth.getUser(memberUid);
       members.push({
         uid: memberUid,
         email: userRecord.email!,

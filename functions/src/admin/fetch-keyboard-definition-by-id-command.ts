@@ -1,5 +1,4 @@
 import AbstractCommand from '../abstract-command';
-import * as functions from 'firebase-functions';
 import {
   ERROR_KEYBOARD_DEFINITION_NOT_FOUND,
   IKeyboardDefinitionDetail,
@@ -10,7 +9,7 @@ import {
   NeedAuthentication,
   ValidateRequired,
 } from '../utils/decorators';
-import * as admin from 'firebase-admin';
+import { CallableRequest, CallableResponse } from 'firebase-functions/https';
 
 interface IFetchKeyboardDefinitionByIdCommandResult extends IResult {
   keyboardDefinitionDetail?: IKeyboardDefinitionDetail;
@@ -21,25 +20,25 @@ export class FetchKeyboardDefinitionByIdCommand extends AbstractCommand<IFetchKe
   @NeedAdministratorPermission()
   @ValidateRequired(['id'])
   async execute(
-    data: any,
-    _context: functions.https.CallableContext
+    request: CallableRequest,
+    _response: CallableResponse | undefined
   ): Promise<IFetchKeyboardDefinitionByIdCommandResult> {
     const documentSnapshot = await this.db
       .collection('keyboards')
       .doc('v2')
       .collection('definitions')
-      .doc(data.id)
+      .doc(request.data.id)
       .get();
     if (!documentSnapshot.exists) {
       return {
         success: false,
         errorCode: ERROR_KEYBOARD_DEFINITION_NOT_FOUND,
-        errorMessage: `Keyboard Definition not found: ${data.id}`,
+        errorMessage: `Keyboard Definition not found: ${request.data.id}`,
       };
     }
-    const userRecord = await admin
-      .auth()
-      .getUser(documentSnapshot.data()!.author_uid);
+    const userRecord = await this.auth.getUser(
+      documentSnapshot.data()!.author_uid
+    );
     const providerData = userRecord.providerData[0];
     return {
       success: true,

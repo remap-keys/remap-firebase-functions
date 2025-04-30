@@ -10,8 +10,7 @@ import {
   NeedAdministratorPermission,
   NeedAuthentication,
 } from '../utils/decorators';
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
+import { CallableRequest, CallableResponse } from 'firebase-functions/https';
 
 export interface IFetchOrganizationsResult extends IResult {
   organizations?: IOrganizationWithMembers[];
@@ -21,8 +20,8 @@ export class FetchOrganizationsCommand extends AbstractCommand<IFetchOrganizatio
   @NeedAuthentication()
   @NeedAdministratorPermission()
   async execute(
-    _data: any,
-    _context: functions.https.CallableContext
+    _request: CallableRequest,
+    _response: CallableResponse | undefined
   ): Promise<IFetchOrganizationsResult> {
     try {
       const organizationsQueryDocumentSnapshot = await this.db
@@ -51,7 +50,7 @@ export class FetchOrganizationsCommand extends AbstractCommand<IFetchOrganizatio
       for (const organization of organizations) {
         const members: IOrganizationMember[] = [];
         for (const memberUid of organization.members) {
-          const userRecord = await admin.auth().getUser(memberUid);
+          const userRecord = await this.auth.getUser(memberUid);
           members.push({
             uid: memberUid,
             email: userRecord.email!,

@@ -1,4 +1,3 @@
-import * as functions from 'firebase-functions';
 import {
   ERROR_ORGANIZATION_NOT_FOUND,
   IOrganization,
@@ -11,7 +10,7 @@ import {
   NeedAuthentication,
   ValidateRequired,
 } from '../utils/decorators';
-import * as admin from 'firebase-admin';
+import { CallableRequest, CallableResponse } from 'firebase-functions/https';
 
 interface IFetchOrganizationByIdCommandResult extends IResult {
   organization?: IOrganization;
@@ -23,20 +22,20 @@ export class FetchOrganizationByIdCommand extends AbstractCommand<IFetchOrganiza
   @NeedAdministratorPermission()
   @ValidateRequired(['id'])
   async execute(
-    data: any,
-    _context: functions.https.CallableContext
+    request: CallableRequest,
+    _response: CallableResponse | undefined
   ): Promise<IFetchOrganizationByIdCommandResult> {
     const documentSnapshot = await this.db
       .collection('organizations')
       .doc('v1')
       .collection('profiles')
-      .doc(data.id)
+      .doc(request.data.id)
       .get();
     if (!documentSnapshot.exists) {
       return {
         success: false,
         errorCode: ERROR_ORGANIZATION_NOT_FOUND,
-        errorMessage: `Organization not found: ${data.id}`,
+        errorMessage: `Organization not found: ${request.data.id}`,
       };
     }
     const organization: IOrganization = {
@@ -55,7 +54,7 @@ export class FetchOrganizationByIdCommand extends AbstractCommand<IFetchOrganiza
     };
     const members: IOrganizationMember[] = [];
     for (const memberUid of organization.members) {
-      const userRecord = await admin.auth().getUser(memberUid);
+      const userRecord = await this.auth.getUser(memberUid);
       members.push({
         uid: memberUid,
         email: userRecord.email!,

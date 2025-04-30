@@ -1,9 +1,9 @@
 import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
 import { SitemapStream, streamToPromise } from 'sitemap';
 import { Readable } from 'stream';
 import { createGzip } from 'zlib';
 import { formatISO } from 'date-fns';
+import * as express from 'express';
 
 type IUrlEntry = {
   url: string;
@@ -19,10 +19,7 @@ export default class GenerateSitemapXmlCommand {
     this.db = db;
   }
 
-  async execute(
-    req: functions.Request,
-    res: functions.Response
-  ): Promise<void> {
+  async execute(req: express.Request, res: express.Response): Promise<void> {
     const urlEntries: IUrlEntry[] = [
       {
         url: `/`,

@@ -6,9 +6,8 @@ import {
   ValidateIncludes,
   ValidateRequired,
 } from '../utils/decorators';
-import * as admin from 'firebase-admin';
 import { notifyWithGAS } from '../utils/notification';
-import * as functions from 'firebase-functions';
+import { CallableRequest, CallableResponse } from 'firebase-functions/https';
 
 export class UpdateKeyboardDefinitionStatusCommand extends AbstractCommand {
   @NeedAuthentication()
@@ -18,40 +17,44 @@ export class UpdateKeyboardDefinitionStatusCommand extends AbstractCommand {
     status: ['draft', 'in_review', 'rejected', 'approved'],
   })
   async execute(
-    data: any,
-    _context: functions.https.CallableContext
+    request: CallableRequest,
+    _response: CallableResponse | undefined,
+    secrets: {
+      jwtSecret: string;
+      notificationUrl: string;
+    }
   ): Promise<IResult> {
     const documentSnapshot = await this.db
       .collection('keyboards')
       .doc('v2')
       .collection('definitions')
-      .doc(data.id)
+      .doc(request.data.id)
       .get();
     if (!documentSnapshot.exists) {
       return {
         success: false,
         errorCode: ERROR_KEYBOARD_DEFINITION_NOT_FOUND,
-        errorMessage: `Keyboard Definition not found: ${data.id}`,
+        errorMessage: `Keyboard Definition not found: ${request.data.id}`,
       };
     }
     await documentSnapshot.ref.update({
-      status: data.status,
-      reject_reason: data.rejectReason,
+      status: request.data.status,
+      reject_reason: request.data.rejectReason,
       updated_at: new Date(),
     });
-    const userRecord = await admin
-      .auth()
-      .getUser(documentSnapshot.data()!.author_uid);
+    const userRecord = await this.auth.getUser(
+      documentSnapshot.data()!.author_uid
+    );
     const providerData = userRecord.providerData[0];
     const payload = {
       messageType: 'change',
       email: providerData.email,
       displayName: providerData.displayName,
       keyboard: documentSnapshot.data()!.name,
-      status: data.status,
+      status: request.data.status,
       definitionId: documentSnapshot.id,
     };
-    await notifyWithGAS(payload);
+    await notifyWithGAS(payload, secrets.jwtSecret, secrets.notificationUrl);
     return {
       success: true,
     };

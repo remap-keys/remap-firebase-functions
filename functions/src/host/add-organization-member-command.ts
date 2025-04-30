@@ -9,21 +9,20 @@ import {
   NeedOrganizationMember,
   ValidateRequired,
 } from '../utils/decorators';
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
+import { CallableRequest, CallableResponse } from 'firebase-functions/https';
 
 export class AddOrganizationMemberCommand extends AbstractCommand<IResult> {
   @NeedAuthentication()
   @ValidateRequired(['organizationId', 'email'])
   @NeedOrganizationMember()
   async execute(
-    data: any,
-    _context: functions.https.CallableContext
+    request: CallableRequest,
+    _response: CallableResponse | undefined
   ): Promise<IResult> {
     try {
-      const email = data.email;
-      const organizationId = data.organizationId;
-      const userRecord = await admin.auth().getUserByEmail(email);
+      const email = request.data.email;
+      const organizationId = request.data.organizationId;
+      const userRecord = await this.auth.getUserByEmail(email);
       if (
         !userRecord.providerData.some(
           (data) => data.providerId === 'github.com'
@@ -35,8 +34,7 @@ export class AddOrganizationMemberCommand extends AbstractCommand<IResult> {
           errorMessage: `The user[${email}] is not logged in to Remap with GitHub account`,
         };
       }
-      const organizationDocumentSnapshot = await admin
-        .firestore()
+      const organizationDocumentSnapshot = await this.db
         .collection('organizations')
         .doc('v1')
         .collection('profiles')

@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
 import * as axios from 'axios';
 import { parse } from 'node-html-parser';
+import * as express from 'express';
 
 type IKeyboardDefinition = {
   id: string;
@@ -31,10 +31,7 @@ export default class GenerateCatalogPageCommand {
     }
   }
 
-  async execute(
-    req: functions.Request,
-    res: functions.Response
-  ): Promise<void> {
+  async execute(req: express.Request, res: express.Response): Promise<void> {
     const html = await GenerateCatalogPageCommand.fetchRemapIndexHtml();
     const root = parse(html);
     const path = req.path;

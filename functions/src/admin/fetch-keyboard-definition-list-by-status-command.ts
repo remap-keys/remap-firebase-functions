@@ -1,5 +1,4 @@
 import AbstractCommand from '../abstract-command';
-import * as functions from 'firebase-functions';
 import { IKeyboardDefinition, IResult } from '../utils/types';
 import {
   NeedAdministratorPermission,
@@ -7,6 +6,7 @@ import {
   ValidateIncludes,
   ValidateRequired,
 } from '../utils/decorators';
+import { CallableRequest, CallableResponse } from 'firebase-functions/https';
 
 interface IFetchKeyboardDefinitionListByStatusCommandResult extends IResult {
   keyboardDefinitionList: IKeyboardDefinition[];
@@ -20,14 +20,14 @@ export class FetchKeyboardDefinitionListByStatusCommand extends AbstractCommand<
     status: ['draft', 'in_review', 'rejected', 'approved'],
   })
   async execute(
-    data: any,
-    _context: functions.https.CallableContext
+    request: CallableRequest,
+    _response: CallableResponse | undefined
   ): Promise<IFetchKeyboardDefinitionListByStatusCommandResult> {
     const querySnapshot = await this.db
       .collection('keyboards')
       .doc('v2')
       .collection('definitions')
-      .where('status', '==', data.status)
+      .where('status', '==', request.data.status)
       .orderBy('updated_at', 'desc')
       .get();
     return {

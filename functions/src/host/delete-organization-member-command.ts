@@ -9,22 +9,20 @@ import {
   NeedOrganizationMember,
   ValidateRequired,
 } from '../utils/decorators';
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
+import { CallableRequest, CallableResponse } from 'firebase-functions/https';
 
 export class DeleteOrganizationMemberCommand extends AbstractCommand<IResult> {
   @NeedAuthentication()
   @NeedOrganizationMember()
   @ValidateRequired(['organizationId', 'uid'])
   async execute(
-    data: any,
-    _context: functions.https.CallableContext
+    request: CallableRequest,
+    _response: CallableResponse | undefined
   ): Promise<IResult> {
     try {
-      const organizationId = data.organizationId;
-      const uid = data.uid;
-      const organizationDocumentSnapshot = await admin
-        .firestore()
+      const organizationId = request.data.organizationId;
+      const uid = request.data.uid;
+      const organizationDocumentSnapshot = await this.db
         .collection('organizations')
         .doc('v1')
         .collection('profiles')

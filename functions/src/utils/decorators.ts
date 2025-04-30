@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions';
+import { CallableRequest, HttpsError } from 'firebase-functions/v2/https';
 import AbstractCommand from '../abstract-command';
 import {
   ERROR_NOT_ADMINISTRATOR,
@@ -14,12 +14,9 @@ export function NeedAuthentication() {
   ) {
     const originalMethod = descriptor.value;
     descriptor.value = function (...args: any[]) {
-      const context = args[1] as functions.https.CallableContext;
-      if (!context.auth) {
-        throw new functions.https.HttpsError(
-          'unauthenticated',
-          'Unauthenticated.'
-        );
+      const request = args[0] as CallableRequest;
+      if (!request.auth) {
+        throw new HttpsError('unauthenticated', 'Unauthenticated.');
       }
       return originalMethod.apply(this, args);
     };
@@ -38,8 +35,8 @@ export function NeedAdministratorPermission() {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const self = this;
       return new Promise((resolve, _reject) => {
-        const context = args[1] as functions.https.CallableContext;
-        const uid = context.auth!.uid;
+        const request = args[0] as CallableRequest;
+        const uid = request.auth!.uid;
         (self as AbstractCommand).checkUserIsAdministrator
           .apply(self, [uid])
           .then((result) => {
@@ -75,8 +72,8 @@ export function NeedOrganizationMember() {
       return new Promise((resolve, _reject) => {
         const data = args[0];
         const organizationId = data.organizationId;
-        const context = args[1] as functions.https.CallableContext;
-        const uid = context.auth!.uid;
+        const request = args[0] as CallableRequest;
+        const uid = request.auth!.uid;
         (self as AbstractCommand).checkUserIsOrganizationMember
           .apply(self, [uid, organizationId])
           .then((result) => {
@@ -107,7 +104,7 @@ export function ValidateRequired(targets: string[]) {
   ) {
     const originalMethod = descriptor.value;
     descriptor.value = function (...args: any[]) {
-      const data = args[0];
+      const data = (args[0] as CallableRequest).data;
       for (const name of targets) {
         const value = data[name];
         if (value === undefined) {
