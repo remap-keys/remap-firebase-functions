@@ -9,19 +9,20 @@
     "prepare-deploy": "yarn build && yarn test && firebase functions:config:set discord.webhook=$DISCORD_WEBHOOK notification.url=$NOTIFICATION_URL jwt.secret=$JWT_SECRET",
     "deploy": "yarn prepare-deploy && firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "yarn jest"
+    "test": "yarn jest",
+    "type-check": "tsc --noEmit"
   },
   "engines": {
     "node": "20"
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@google-cloud/pubsub": "^4.0.6",
-    "@google-cloud/tasks": "^4.0.1",
+    "@google-cloud/pubsub": "^4.11.0",
+    "@google-cloud/tasks": "^6.0.1",
     "axios": "^0.21.1",
     "date-fns": "^4.1.0",
-    "firebase-admin": "^11.11.0",
-    "firebase-functions": "^4.4.1",
+    "firebase-admin": "^13.3.0",
+    "firebase-functions": "^6.3.2",
     "jsonwebtoken": "^9.0.2",
     "node-html-parser": "^6.1.13",
     "qs": "^6.11.2",
@@ -38,6 +39,7 @@
     "eslint": "^8.56.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^4.3.4",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^5.0.1",
     "firebase-functions-test": "^0.2.0",
@@ -46,7 +48,7 @@
     "lint-staged": "^15.2.0",
     "prettier": "^3.1.1",
     "ts-jest": "^29.1.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.8.3"
   },
   "private": true,
   "husky": {

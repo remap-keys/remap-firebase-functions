@@ -21,6 +21,7 @@ module.exports = {
   },
   ignorePatterns: [
     '/lib/**/*', // Ignore built files.
+    '.eslintrc.js', // Ignore this ESLint configuration file.
   ],
   plugins: ['@typescript-eslint', 'import', 'prettier'],
   rules: {
@@ -37,5 +38,10 @@ module.exports = {
         destructuredArrayIgnorePattern: '^_',
       },
     ],
+  },
+  settings: {
+    'import/resolver': {
+      typescript: {},
+    },
   },
 };

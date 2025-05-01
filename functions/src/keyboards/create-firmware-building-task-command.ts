@@ -2,9 +2,8 @@ import AbstractCommand from '../abstract-command';
 import { ERROR_UNCOMPLETED_TASK_EXISTS, IResult } from '../utils/types';
 import { NeedAuthentication, ValidateRequired } from '../utils/decorators';
 import { CloudTasksClient } from '@google-cloud/tasks';
-import { google } from '@google-cloud/tasks/build/protos/protos';
-import HttpMethod = google.cloud.tasks.v2.HttpMethod;
-import * as functions from 'firebase-functions';
+import { google } from '@google-cloud/tasks/build/protos';
+import { CallableRequest, CallableResponse } from 'firebase-functions/https';
 
 const PROJECT_ID = 'remap-b2d08';
 const LOCATION = 'asia-northeast1';
@@ -16,13 +15,13 @@ export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> 
   @NeedAuthentication()
   @ValidateRequired(['firmwareId', 'description', 'parametersJson'])
   async execute(
-    data: any,
-    context: functions.https.CallableContext
+    request: CallableRequest,
+    _response: CallableResponse | undefined
   ): Promise<IResult> {
-    const firmwareId = data.firmwareId;
-    const description = data.description;
-    const parametersJson = data.parametersJson;
-    const uid = context.auth!.uid;
+    const firmwareId = request.data.firmwareId;
+    const description = request.data.description;
+    const parametersJson = request.data.parametersJson;
+    const uid = request.auth!.uid;
 
     const querySnapshot = await this.db
       .collection('build')
@@ -60,23 +59,21 @@ export class CreateFirmwareBuildingTaskCommand extends AbstractCommand<IResult> 
     const client = new CloudTasksClient();
     const parent = client.queuePath(PROJECT_ID, LOCATION, QUEUE);
 
-    const task = {
-      httpRequest: {
-        headers: {
-          'Content-Type': 'text/plain',
-        },
-        httpMethod: HttpMethod.GET,
-        url: `${BUILD_SERVER_URL}/build?uid=${uid}&taskId=${taskId}`,
-        oidcToken: {
-          serviceAccountEmail: BUILD_SERVER_AUTH_SA_EMAIL,
+    const [response] = await client.createTask({
+      parent,
+      task: {
+        httpRequest: {
+          headers: {
+            'Content-Type': 'text/plain',
+          },
+          httpMethod: google.cloud.tasks.v2.HttpMethod.GET,
+          url: `${BUILD_SERVER_URL}/build?uid=${uid}&taskId=${taskId}`,
+          oidcToken: {
+            serviceAccountEmail: BUILD_SERVER_AUTH_SA_EMAIL,
+          },
         },
       },
-    };
-    const request = {
-      parent,
-      task,
-    };
-    const [response] = await client.createTask(request);
+    });
     console.log(
       `Creating the firmware building task was successfully. The response.name is ${response.name}`
     );

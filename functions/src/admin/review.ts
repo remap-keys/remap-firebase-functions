@@ -1,12 +1,20 @@
-import * as functions from 'firebase-functions';
-import { firestore } from 'firebase-admin';
 import { notifyReviewStatusChangeMessageToDiscordAndGAS } from '../utils/notification';
+import { CloudEvent } from 'firebase-functions';
+import { MessagePublishedData } from 'firebase-functions/pubsub';
+import { Firestore, DocumentSnapshot } from 'firebase-admin/firestore';
+import { Auth } from 'firebase-admin/auth';
 
 export const review = async (
-  message: functions.pubsub.Message,
-  db: firestore.Firestore
+  message: CloudEvent<MessagePublishedData>,
+  db: Firestore,
+  auth: Auth,
+  discordWebhook: string,
+  jwtSecret: string,
+  notificationUrl: string
 ): Promise<void> => {
-  const data = JSON.parse(Buffer.from(message.data, 'base64').toString());
+  const data = JSON.parse(
+    Buffer.from(message.data.message.data, 'base64').toString()
+  );
   const definitionId = data.definitionId;
 
   const definitionDocumentSnapshot = await db
@@ -46,35 +54,48 @@ export const review = async (
   });
   if (sameProductNameExists) {
     await reject(
+      auth,
       definitionDocumentSnapshot,
-      'The same keyboard definition (Vendor ID, Product ID and Product Name) already exists.'
+      'The same keyboard definition (Vendor ID, Product ID and Product Name) already exists.',
+      discordWebhook,
+      jwtSecret,
+      notificationUrl
     );
     return;
   }
   requestIsUnique(definitionDocumentSnapshot);
 };
 
-const requestIsUnique = (
-  definitionDocument: firestore.DocumentSnapshot
-): void => {
+const requestIsUnique = (definitionDocument: DocumentSnapshot): void => {
   const data = definitionDocument.data()!;
   const message = `The Vendor ID, Product ID and Product Name of the keyboard ${data.name}(${data.product_name}) (${definitionDocument.id}) is unique.`;
   console.log(message);
 };
 
 const reject = async (
-  definitionDocument: firestore.DocumentSnapshot,
-  reason: string
+  auth: Auth,
+  definitionDocument: DocumentSnapshot,
+  reason: string,
+  discordWebhook: string,
+  jwtSecret: string,
+  notificationUrl: string
 ): Promise<void> => {
   await definitionDocument.ref.update({
     status: 'rejected',
     reject_reason: reason,
     updated_at: new Date(),
   });
-  await notifyReviewStatusChangeMessageToDiscordAndGAS(definitionDocument.id, {
-    name: definitionDocument.data()!.name,
-    author_uid: definitionDocument.data()!.author_uid,
-    product_name: definitionDocument.data()!.product_name,
-    status: 'rejected',
-  });
+  await notifyReviewStatusChangeMessageToDiscordAndGAS(
+    auth,
+    definitionDocument.id,
+    {
+      name: definitionDocument.data()!.name,
+      author_uid: definitionDocument.data()!.author_uid,
+      product_name: definitionDocument.data()!.product_name,
+      status: 'rejected',
+    },
+    discordWebhook,
+    jwtSecret,
+    notificationUrl
+  );
 };

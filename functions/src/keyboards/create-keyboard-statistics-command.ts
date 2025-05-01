@@ -1,7 +1,7 @@
 import { ERROR_KEYBOARD_DEFINITION_NOT_FOUND, IResult } from '../utils/types';
 import AbstractCommand from '../abstract-command';
 import { NeedAuthentication, ValidateRequired } from '../utils/decorators';
-import * as functions from 'firebase-functions';
+import { CallableRequest, CallableResponse } from 'firebase-functions/https';
 
 type IKeyboardStatistics = {
   counts_of_opening_keyboard: {
@@ -24,11 +24,11 @@ export class CreateKeyboardStatisticsCommand extends AbstractCommand<ICreateKeyb
   @NeedAuthentication()
   @ValidateRequired(['keyboardDefinitionId'])
   async execute(
-    data: any,
-    context: functions.https.CallableContext
+    request: CallableRequest,
+    _response: CallableResponse | undefined
   ): Promise<ICreateKeyboardStatisticsResult> {
-    const keyboardDefinitionId = data.keyboardDefinitionId;
-    const uid = context.auth!.uid;
+    const keyboardDefinitionId = request.data.keyboardDefinitionId;
+    const uid = request.auth!.uid;
 
     const result = await this.checkWhetherUserIsOwnerOfKeyboardDefinition(
       uid,

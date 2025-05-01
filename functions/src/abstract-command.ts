@@ -1,21 +1,28 @@
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
 import { IResult } from './utils/types';
+import { Firestore } from 'firebase-admin/firestore';
+import { CallableRequest, CallableResponse } from 'firebase-functions/v2/https';
+import { Auth } from 'firebase-admin/auth';
 
 abstract class AbstractCommand<R extends IResult = IResult> {
-  protected db: admin.firestore.Firestore;
+  db: Firestore;
+  auth: Auth;
 
-  constructor(db: admin.firestore.Firestore) {
+  constructor(db: Firestore, auth: Auth) {
     this.db = db;
+    this.auth = auth;
   }
 
   abstract execute(
-    data: any,
-    context: functions.https.CallableContext
+    request: CallableRequest,
+    response: CallableResponse | undefined,
+    secrets: {
+      jwtSecret: string;
+      notificationUrl: string;
+    }
   ): Promise<R>;
 
   async checkUserIsAdministrator(uid: string): Promise<boolean> {
-    const userRecord = await admin.auth().getUser(uid);
+    const userRecord = await this.auth.getUser(uid);
     const email = userRecord.email;
     if (!email) {
       return false;

@@ -1,3 +1,4 @@
+import { CallableRequest, CallableResponse } from 'firebase-functions/https';
 import AbstractCommand from '../abstract-command';
 import {
   NeedAdministratorPermission,
@@ -8,7 +9,6 @@ import {
   IResult,
   KeyboardDefinitionStatus,
 } from '../utils/types';
-import * as functions from 'firebase-functions';
 
 interface IFetchKeyboardDefinitionStatsResult extends IResult {
   totalCount?: number;
@@ -22,8 +22,8 @@ export class FetchKeyboardDefinitionStatsCommand extends AbstractCommand<IFetchK
   @NeedAuthentication()
   @NeedAdministratorPermission()
   async execute(
-    _data: any,
-    _context: functions.https.CallableContext
+    _request: CallableRequest,
+    _response: CallableResponse | undefined
   ): Promise<IFetchKeyboardDefinitionStatsResult> {
     const querySnapshot = await this.db
       .collection('keyboards')
