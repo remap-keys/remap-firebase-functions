@@ -55,7 +55,8 @@ export class OrderCreateCommand extends AbstractCommand<IOrderCreateResult> {
           oAuthClientSecret: secrets.paypalClientSecret,
         },
         timeout: 0,
-        environment: Environment.Sandbox,
+        // environment: Environment.Sandbox,
+        environment: Environment.Production,
         logging: {
           logLevel: LogLevel.Debug,
           logRequest: { logBody: true },

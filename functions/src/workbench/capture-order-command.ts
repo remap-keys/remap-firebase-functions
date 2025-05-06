@@ -75,7 +75,8 @@ export class CaptureOrderCommand extends AbstractCommand<IResult> {
           oAuthClientSecret: secrets.paypalClientSecret,
         },
         timeout: 0,
-        environment: Environment.Sandbox,
+        environment: Environment.Production,
+        // environment: Environment.Sandbox,
         logging: {
           logLevel: LogLevel.Debug,
           logRequest: { logBody: true },
