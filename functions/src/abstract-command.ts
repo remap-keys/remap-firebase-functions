@@ -18,6 +18,10 @@ abstract class AbstractCommand<R extends IResult = IResult> {
     secrets: {
       jwtSecret: string;
       notificationUrl: string;
+      paypalClientIdForSandbox: string;
+      paypalClientSecretForSandbox: string;
+      paypalClientIdForProduction: string;
+      paypalClientSecretForProduction: string;
     }
   ): Promise<R>;
 
