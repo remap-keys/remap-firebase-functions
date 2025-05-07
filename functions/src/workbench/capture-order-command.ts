@@ -10,19 +10,27 @@ import { AbstractPurchaseCommand } from './abstract-purchase-command';
 
 export class CaptureOrderCommand extends AbstractPurchaseCommand<IResult> {
   @NeedAuthentication()
-  @ValidateRequired(['orderId'])
+  @ValidateRequired(['orderId', 'environment'])
   async execute(
     request: CallableRequest,
     _response: CallableResponse | undefined,
     secrets: {
       jwtSecret: string;
       notificationUrl: string;
-      paypalClientId: string;
-      paypalClientSecret: string;
+      paypalClientIdForSandbox: string;
+      paypalClientSecretForSandbox: string;
+      paypalClientIdForProduction: string;
+      paypalClientSecretForProduction: string;
     }
   ): Promise<IResult> {
     const uid = request.auth!.uid;
     const orderId = request.data.orderId;
+    const environment = request.data.environment as string;
+    if (environment !== 'sandbox' && environment !== 'production') {
+      throw new Error(
+        `Invalid environment: ${environment}. It should be 'sandbox' or 'production'.`
+      );
+    }
 
     let historyDocRef:
       | FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
@@ -66,8 +74,13 @@ export class CaptureOrderCommand extends AbstractPurchaseCommand<IResult> {
 
       // Send a request to PayPal to capture the order.
       const client = this.createPayPalClient(
-        secrets.paypalClientId,
-        secrets.paypalClientSecret
+        environment,
+        environment === 'sandbox'
+          ? secrets.paypalClientIdForSandbox
+          : secrets.paypalClientIdForProduction,
+        environment === 'sandbox'
+          ? secrets.paypalClientSecretForSandbox
+          : secrets.paypalClientSecretForProduction
       );
       const ordersController = new OrdersController(client);
       const collect = {

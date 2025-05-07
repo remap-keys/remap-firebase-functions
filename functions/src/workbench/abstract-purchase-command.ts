@@ -5,15 +5,21 @@ import { IResult, RemainingPurchaseStatus } from '../utils/types';
 export abstract class AbstractPurchaseCommand<
   T extends IResult,
 > extends AbstractCommand<T> {
-  protected createPayPalClient(clientId: string, clientSecret: string) {
+  protected createPayPalClient(
+    environment: 'sandbox' | 'production',
+    clientId: string,
+    clientSecret: string
+  ) {
     const client = new Client({
       clientCredentialsAuthCredentials: {
         oAuthClientId: clientId,
         oAuthClientSecret: clientSecret,
       },
       timeout: 0,
-      environment: Environment.Sandbox,
-      // environment: Environment.Production,
+      environment:
+        environment === 'sandbox'
+          ? Environment.Sandbox
+          : Environment.Production,
       logging: {
         logLevel: LogLevel.Debug,
         logRequest: { logBody: true },

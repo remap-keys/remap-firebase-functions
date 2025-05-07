@@ -42,13 +42,13 @@ const discordWebhook = defineSecret('DISCORD_WEBHOOK');
 const notificationUrl = defineSecret('NOTIFICATION_URL');
 const jwtSecret = defineSecret('JWT_SECRET');
 
-// PayPal API credentials for Production
-// const paypalClientId = defineSecret('PAYPAL_CLIENT_ID');
-// const paypalClientSecret = defineSecret('PAYPAL_CLIENT_SECRET');
+const paypalClientIdForProduction = defineSecret('PAYPAL_CLIENT_ID');
+const paypalClientSecretForProduction = defineSecret('PAYPAL_CLIENT_SECRET');
 
-// PayPal API credentials for Sandbox
-const paypalClientId = defineSecret('SANDBOX_PAYPAL_CLIENT_ID');
-const paypalClientSecret = defineSecret('SANDBOX_PAYPAL_CLIENT_SECRET');
+const paypalClientIdForSandbox = defineSecret('SANDBOX_PAYPAL_CLIENT_ID');
+const paypalClientSecretForSandbox = defineSecret(
+  'SANDBOX_PAYPAL_CLIENT_SECRET'
+);
 
 setGlobalOptions({
   region: FUNCTIONS_REGION_ASIA,
@@ -95,16 +95,21 @@ const funcMap = Object.keys(commandMap).reduce(
         secrets: [
           jwtSecret,
           notificationUrl,
-          paypalClientId,
-          paypalClientSecret,
+          paypalClientIdForSandbox,
+          paypalClientSecretForSandbox,
+          paypalClientIdForProduction,
+          paypalClientSecretForProduction,
         ],
       },
       async (request, response): Promise<IResult> => {
         return await commandMap[functionName].execute(request, response, {
           jwtSecret: jwtSecret.value(),
           notificationUrl: notificationUrl.value(),
-          paypalClientId: paypalClientId.value(),
-          paypalClientSecret: paypalClientSecret.value(),
+          paypalClientIdForSandbox: paypalClientIdForSandbox.value(),
+          paypalClientSecretForSandbox: paypalClientSecretForSandbox.value(),
+          paypalClientIdForProduction: paypalClientIdForProduction.value(),
+          paypalClientSecretForProduction:
+            paypalClientSecretForProduction.value(),
         });
       }
     );
