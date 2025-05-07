@@ -1,19 +1,14 @@
 import { CallableRequest, CallableResponse } from 'firebase-functions/https';
-import AbstractCommand from '../abstract-command';
 import { NeedAuthentication, ValidateRequired } from '../utils/decorators';
 import {
   ERROR_CAPTURE_ORDER_FAILED,
   IResult,
   RemainingPurchaseStatus,
 } from '../utils/types';
-import {
-  Client,
-  Environment,
-  LogLevel,
-  OrdersController,
-} from '@paypal/paypal-server-sdk';
+import { OrdersController } from '@paypal/paypal-server-sdk';
+import { AbstractPurchaseCommand } from './abstract-purchase-command';
 
-export class CaptureOrderCommand extends AbstractCommand<IResult> {
+export class CaptureOrderCommand extends AbstractPurchaseCommand<IResult> {
   @NeedAuthentication()
   @ValidateRequired(['orderId'])
   async execute(
@@ -29,32 +24,33 @@ export class CaptureOrderCommand extends AbstractCommand<IResult> {
     const uid = request.auth!.uid;
     const orderId = request.data.orderId;
 
+    let historyDocRef:
+      | FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
+      | undefined;
     try {
       // Check the purchase history.
-      const historyDocRef = await this.db
-        .collection('users')
-        .doc('v1')
-        .collection('purchases')
-        .doc(uid)
-        .collection('histories')
-        .where('orderId', '==', orderId)
-        .get();
-      if (historyDocRef.empty) {
+      const historyDocsRef = await this.fetchPurchaseHistory(uid, orderId);
+      if (historyDocsRef.empty) {
         return {
           success: false,
           errorCode: ERROR_CAPTURE_ORDER_FAILED,
           errorMessage: `The order[${orderId}] is not found`,
         };
       }
-      if (historyDocRef.docs.length > 1) {
+      if (historyDocsRef.docs.length > 1) {
         return {
           success: false,
           errorCode: ERROR_CAPTURE_ORDER_FAILED,
           errorMessage: `The order[${orderId}] is duplicated`,
         };
       }
-      const historyDoc = historyDocRef.docs[0];
+      const historyDoc = historyDocsRef.docs[0];
+      historyDocRef = historyDoc.ref;
       if (historyDoc.data().status !== RemainingPurchaseStatus.order_created) {
+        await this.recordErrorMessage(
+          historyDocRef,
+          `The order[${orderId}] is not in the correct status: ${historyDoc.data().status}`
+        );
         return {
           success: false,
           errorCode: ERROR_CAPTURE_ORDER_FAILED,
@@ -63,26 +59,16 @@ export class CaptureOrderCommand extends AbstractCommand<IResult> {
       }
 
       // Update the purchase history.
-      await historyDoc.ref.update({
+      await historyDocRef.update({
         status: RemainingPurchaseStatus.capturing_order,
         updatedAt: new Date(),
       });
 
       // Send a request to PayPal to capture the order.
-      const client = new Client({
-        clientCredentialsAuthCredentials: {
-          oAuthClientId: secrets.paypalClientId,
-          oAuthClientSecret: secrets.paypalClientSecret,
-        },
-        timeout: 0,
-        environment: Environment.Production,
-        // environment: Environment.Sandbox,
-        logging: {
-          logLevel: LogLevel.Debug,
-          logRequest: { logBody: true },
-          logResponse: { logHeaders: true },
-        },
-      });
+      const client = this.createPayPalClient(
+        secrets.paypalClientId,
+        secrets.paypalClientSecret
+      );
       const ordersController = new OrdersController(client);
       const collect = {
         id: orderId,
@@ -93,6 +79,10 @@ export class CaptureOrderCommand extends AbstractCommand<IResult> {
       console.log(body);
 
       if (httpResponse.statusCode !== 201) {
+        await this.recordErrorMessage(
+          historyDoc.ref,
+          `Failed to capture order. Status code: ${httpResponse.statusCode}`
+        );
         return {
           success: false,
           errorCode: ERROR_CAPTURE_ORDER_FAILED,
@@ -101,7 +91,7 @@ export class CaptureOrderCommand extends AbstractCommand<IResult> {
       }
 
       // Update the purchase history.
-      await historyDoc.ref.update({
+      await historyDocRef.update({
         status: RemainingPurchaseStatus.order_captured,
         captureOrderResponseJson: body,
         updatedAt: new Date(),
@@ -115,6 +105,10 @@ export class CaptureOrderCommand extends AbstractCommand<IResult> {
         .doc(uid);
       const userDoc = await userDocRef.get();
       if (!userDoc.exists) {
+        await this.recordErrorMessage(
+          historyDocRef,
+          `The purchase document for the user[${uid}] is not found`
+        );
         return {
           success: false,
           errorCode: ERROR_CAPTURE_ORDER_FAILED,
@@ -133,6 +127,12 @@ export class CaptureOrderCommand extends AbstractCommand<IResult> {
       };
     } catch (error) {
       console.error('Capture order failed:', error);
+      if (historyDocRef !== undefined) {
+        await this.recordErrorMessage(
+          historyDocRef,
+          `Capture order failed: ${error}`
+        );
+      }
       return {
         success: false,
         errorCode: ERROR_CAPTURE_ORDER_FAILED,

@@ -1,5 +1,4 @@
 import { CallableRequest, CallableResponse } from 'firebase-functions/https';
-import AbstractCommand from '../abstract-command';
 import { NeedAuthentication, ValidateRequired } from '../utils/decorators';
 import {
   ERROR_ORDER_CREATE_FAILED,
@@ -7,19 +6,17 @@ import {
   RemainingPurchaseStatus,
 } from '../utils/types';
 import {
-  Client,
   OrdersController,
-  Environment,
-  LogLevel,
   CheckoutPaymentIntent,
   OrderRequest,
 } from '@paypal/paypal-server-sdk';
+import { AbstractPurchaseCommand } from './abstract-purchase-command';
 
 type IOrderCreateResult = {
   orderId?: string;
 } & IResult;
 
-export class OrderCreateCommand extends AbstractCommand<IOrderCreateResult> {
+export class OrderCreateCommand extends AbstractPurchaseCommand<IOrderCreateResult> {
   @NeedAuthentication()
   @ValidateRequired(['language'])
   async execute(
@@ -34,35 +31,18 @@ export class OrderCreateCommand extends AbstractCommand<IOrderCreateResult> {
   ): Promise<IOrderCreateResult> {
     const uid = request.auth!.uid;
     const language = request.data.language as string;
+    let historyDocRef:
+      | FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
+      | undefined;
     try {
       // Create a purchase history.
-      const historyDocRef = await this.db
-        .collection('users')
-        .doc('v1')
-        .collection('purchases')
-        .doc(uid)
-        .collection('histories')
-        .add({
-          status: RemainingPurchaseStatus.creating_order,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
+      historyDocRef = await this.createPurchaseHistory(uid);
 
       // Send an order create request to PayPal.
-      const client = new Client({
-        clientCredentialsAuthCredentials: {
-          oAuthClientId: secrets.paypalClientId,
-          oAuthClientSecret: secrets.paypalClientSecret,
-        },
-        timeout: 0,
-        // environment: Environment.Sandbox,
-        environment: Environment.Production,
-        logging: {
-          logLevel: LogLevel.Debug,
-          logRequest: { logBody: true },
-          logResponse: { logHeaders: true },
-        },
-      });
+      const client = this.createPayPalClient(
+        secrets.paypalClientId,
+        secrets.paypalClientSecret
+      );
       const ordersController = new OrdersController(client);
       const collect = {
         body: {
@@ -115,6 +95,10 @@ export class OrderCreateCommand extends AbstractCommand<IOrderCreateResult> {
 
       if (httpResponse.statusCode !== 201) {
         console.error('Failed to create order:', httpResponse);
+        await this.recordErrorMessage(
+          historyDocRef,
+          `Failed to create order. Status code: ${httpResponse.statusCode}`
+        );
         return {
           success: false,
           errorCode: ERROR_ORDER_CREATE_FAILED,
@@ -137,6 +121,12 @@ export class OrderCreateCommand extends AbstractCommand<IOrderCreateResult> {
       };
     } catch (error) {
       console.error('Error creating order:', error);
+      if (historyDocRef !== undefined) {
+        await this.recordErrorMessage(
+          historyDocRef,
+          `Error creating order: ${error}`
+        );
+      }
       return {
         success: false,
         errorCode: ERROR_ORDER_CREATE_FAILED,

@@ -43,12 +43,12 @@ const notificationUrl = defineSecret('NOTIFICATION_URL');
 const jwtSecret = defineSecret('JWT_SECRET');
 
 // PayPal API credentials for Production
-const paypalClientId = defineSecret('PAYPAL_CLIENT_ID');
-const paypalClientSecret = defineSecret('PAYPAL_CLIENT_SECRET');
+// const paypalClientId = defineSecret('PAYPAL_CLIENT_ID');
+// const paypalClientSecret = defineSecret('PAYPAL_CLIENT_SECRET');
 
 // PayPal API credentials for Sandbox
-// const paypalClientId = defineSecret('SANDBOX_PAYPAL_CLIENT_ID');
-// const paypalClientSecret = defineSecret('SANDBOX_PAYPAL_CLIENT_SECRET');
+const paypalClientId = defineSecret('SANDBOX_PAYPAL_CLIENT_ID');
+const paypalClientSecret = defineSecret('SANDBOX_PAYPAL_CLIENT_SECRET');
 
 setGlobalOptions({
   region: FUNCTIONS_REGION_ASIA,
