@@ -70,9 +70,8 @@ export function NeedOrganizationMember() {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const self = this;
       return new Promise((resolve, _reject) => {
-        const data = args[0];
-        const organizationId = data.organizationId;
         const request = args[0] as CallableRequest;
+        const organizationId = request.data.organizationId;
         const uid = request.auth!.uid;
         (self as AbstractCommand).checkUserIsOrganizationMember
           .apply(self, [uid, organizationId])
