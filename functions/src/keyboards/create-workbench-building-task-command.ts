@@ -8,7 +8,8 @@ import { google } from '@google-cloud/tasks/build/protos';
 const PROJECT_ID = 'remap-b2d08';
 const LOCATION = 'asia-northeast1';
 const QUEUE = 'build-task-queue';
-const BUILD_SERVER_URL = 'https://build.remap-keys.app';
+const BUILD_SERVER_URL =
+  'https://remap-build-server-481322013727.asia-northeast1.run.app';
 const BUILD_SERVER_AUTH_SA_EMAIL = `remap-build-server-task-auth@${PROJECT_ID}.iam.gserviceaccount.com`;
 
 export class CreateWorkbenchBuildingTaskCommand extends AbstractCommand<IResult> {
